@@ -177,9 +177,7 @@ See the FlexWebListExamples.
 |  05 Jul 2006: | initial version |
 |  Dependencies: | %$DEPENDENCIES% |
 |  Perl Version: | 5.8 |
-|  Foswiki:Extensions/Benchmark: | %SYSTEMWEB%.GoodStyle nn%, %SYSTEMWEB%.FormattedSearch nn%, %TOPIC% nn% |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
 |  Feedback: | Foswiki:Extensions/%TOPIC%Dev |
-|  Appraisal: | Foswiki:Extensions/%TOPIC%Appraisal |
 
 -- TWiki:Main/MichaelDaum - 15 Feb 2008
