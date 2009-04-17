@@ -12,7 +12,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-package TWiki::Plugins::FlexWebListPlugin;
+package Foswiki::Plugins::FlexWebListPlugin;
 
 use strict;
 use vars qw( $VERSION $RELEASE $core $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION);
@@ -25,7 +25,7 @@ $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 ###############################################################################
 sub initPlugin {
   $core = undef;
-  TWiki::Func::registerTagHandler('FLEXWEBLIST', \&renderFlexWebList);
+  Foswiki::Func::registerTagHandler('FLEXWEBLIST', \&renderFlexWebList);
   return 1;
 }
 
@@ -33,9 +33,9 @@ sub initPlugin {
 sub newCore {
 
   return $core if $core;
-  eval 'use TWiki::Plugins::FlexWebListPlugin::Core;';
+  eval 'use Foswiki::Plugins::FlexWebListPlugin::Core;';
   die $@ if $@;
-  $core = new TWiki::Plugins::FlexWebListPlugin::Core;
+  $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
   return $core;
 }
 

@@ -12,7 +12,7 @@
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-package TWiki::Plugins::FlexWebListPlugin::Core;
+package Foswiki::Plugins::FlexWebListPlugin::Core;
 
 use strict;
 
@@ -34,8 +34,8 @@ sub new {
   #writeDebug("new FlexWebListPlugin::Core");
 
   $this->{webCache} = ();
-  $homeTopic = TWiki::Func::getPreferencesValue('HOMETOPIC') 
-    || $TWiki::cfg{HomeTopicName} || 'WebHome';
+  $homeTopic = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
+    || $Foswiki::cfg{HomeTopicName} || 'WebHome';
 
   return $this;
 }
@@ -101,7 +101,7 @@ sub handler {
     if ($aweb =~ /^(public|webtemplate)(current)?$/) {
       $aweb = $1;
       my @webs;
-      if (defined $2 && TWiki::Func::webExists($currentWeb)) {
+      if (defined $2 && Foswiki::Func::webExists($currentWeb)) {
 	push @webs, $currentWeb
       }
       push @webs, keys %{$this->getWebs($aweb)};
@@ -157,7 +157,7 @@ sub handler {
   $result = $this->{header}.$result.$this->{footer};
   escapeParameter($result);
   #writeDebug("result=$result");
-  $result = TWiki::Func::expandCommonVariables($result, $currentTopic, $currentWeb);
+  $result = Foswiki::Func::expandCommonVariables($result, $currentTopic, $currentWeb);
 
   #writeDebug("*** handler done");
 
@@ -200,13 +200,13 @@ sub formatWeb {
 
   my $url = '';
   if ($result =~ /\$url/) {
-    TWiki::Func::getScriptUrl($web->{key}, $homeTopic, 'view');
+    Foswiki::Func::getScriptUrl($web->{key}, $homeTopic, 'view');
   }
 
   my $sitemapUseTo = '';
   if ($result =~ /\$sitemapuseto/) {
     $sitemapUseTo = 
-      TWiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) || '';
+      Foswiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) || '';
 
     $sitemapUseTo =~ s/"/&quot;/g;
     $sitemapUseTo =~ s/<nop>/#nop#/g;
@@ -217,7 +217,7 @@ sub formatWeb {
   my $sitemapWhat = '';
   if ($result =~ /\$sitemapwhat/) {
     $sitemapWhat = 
-      TWiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) || '';
+      Foswiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) || '';
 
     $sitemapWhat =~ s/"/&quot;/g;
     $sitemapWhat =~ s/<nop>/#nop#/g;
@@ -261,11 +261,11 @@ sub getWebs {
   
   # dakar
   if ($filter eq 'public') {
-    @webs = TWiki::Func::getListOfWebs('user,public,allowed');
+    @webs = Foswiki::Func::getListOfWebs('user,public,allowed');
   } elsif ($filter eq 'webtemplate') {
-    @webs = TWiki::Func::getListOfWebs('template,allowed');
+    @webs = Foswiki::Func::getListOfWebs('template,allowed');
   } else {
-    @webs = TWiki::Func::getListOfWebs($filter);
+    @webs = Foswiki::Func::getListOfWebs($filter);
   }
   my $webs = $this->hashWebs(@webs);
 
@@ -327,11 +327,11 @@ sub hashWebs {
 # compatibility wrapper
 sub isAdmin { 
 
-  if ($TWiki::Plugins::VERSION >= 1.2) {
-    return TWiki::Func::isAnAdmin();
+  if ($Foswiki::Plugins::VERSION >= 1.2) {
+    return Foswiki::Func::isAnAdmin();
   }
 
-  my $user = $TWiki::Plugins::SESSION->{user};
+  my $user = $Foswiki::Plugins::SESSION->{user};
   if ($user) {
     return $user->isAdmin();
   }

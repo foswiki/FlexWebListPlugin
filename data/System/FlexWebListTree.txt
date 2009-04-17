@@ -4,7 +4,7 @@
 The fragment below can be used in a sidebar navigation to establish a folder-like subweb navigation.
 This uses the jqTreeview widget of the Foswiki:Extensions/JQueryPlugin.
 
-Use it by adding =%<nop>INCLUDE{"%WEB%.%TOPIC%"}%= to your WebLeftBar or TWikiWebSideBar.
+Use it by adding =%<nop>INCLUDE{"%WEB%.%TOPIC%"}%= to your sidebar navigation.
 
 If you want to hide the web navigation from <nop>WikiGuests then uncomment the following:
    * #Set DENYTOPICVIEW = %MAINWEB%.WikiGuest

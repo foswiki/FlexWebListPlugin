@@ -2,7 +2,7 @@
 ---+!! %TOPIC%
 
 The fragment below can be used in a sidebar navigation to establish a "twisted" subweb navigation.
-Use it by adding =%<nop>INCLUDE{"%WEB%.%TOPIC%"}%= to your WebLeftBar or TWikiWebSideBar.
+Use it by adding =%<nop>INCLUDE{"%WEB%.%TOPIC%"}%= to your sidebar navigation
 
 If you want to hide the web navigation from <nop>WikiGuests then uncomment the following:
    * #Set DENYTOPICVIEW = %MAINWEB%.WikiGuest
@@ -23,7 +23,7 @@ If you want to hide the web navigation from <nop>WikiGuests then uncomment the f
 ~~~   webs="%MAINWEB%,User,People,public,%SYSTEMWEB%" 
 ~~~   exclude="^(TestCases|Trash).*" 
 ~~~   adminwebs="Applications.*"
-~~~   map="TWiki=System"
+~~~   map="System=Documentation"
 ~~~   header="<ul>"
 ~~~   format="<li
 ~~~       $percntIFDEFINED{\"%BASEWEB%\" as=\"$web\"
@@ -31,7 +31,7 @@ If you want to hide the web navigation from <nop>WikiGuests then uncomment the f
 ~~~       }$percnt>
 ~~~     <a href=\"%SCRIPTURLPATH{"view"}%/$web/%HOMETOPIC%\"
 ~~~           $percntIFDEFINED{\"%BASEWEB%\" as=\"$web\"
-~~~             then=\" class='twikiCurrentTopicLink'\"
+~~~             then=\" class='foswikiCurrentTopicLink'\"
 ~~~           }$percnt>$name</a>
 ~~~     $percntIFDEFINEDTHEN{\"$nrsubwebs \" as=\"0 \" glue=\"off\"}$percnt
 ~~~     $percntELSEDEFINED$percnt
