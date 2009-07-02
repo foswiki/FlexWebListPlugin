@@ -200,7 +200,7 @@ sub formatWeb {
 
   my $url = '';
   if ($result =~ /\$url/) {
-    Foswiki::Func::getScriptUrl($web->{key}, $homeTopic, 'view');
+    $url = Foswiki::Func::getScriptUrl($web->{key}, $homeTopic, 'view');
   }
 
   my $sitemapUseTo = '';
@@ -225,6 +225,12 @@ sub formatWeb {
     $sitemapWhat =~ s/#nop#/<nop>/g;
   }
 
+  my $color = '';
+  if ($result =~ /\$color/) {
+    $color =
+      Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) || '';
+  }
+
   $result =~ s/\$parent/$web->{parentName}/go;
   $result =~ s/\$name/$name/go;
   $result =~ s/\$origname/$web->{name}/go;
@@ -237,6 +243,7 @@ sub formatWeb {
   $result =~ s/\$url/$url/g;
   $result =~ s/\$sitemapuseto/$sitemapUseTo/g;
   $result =~ s/\$sitemapwhat/$sitemapWhat/g;
+  $result =~ s/\$color/$color/g;
 
   #writeDebug("result=$result");
   #writeDebug("done formatWeb($web->{key})");

@@ -18,7 +18,7 @@ use strict;
 use vars qw( $VERSION $RELEASE $core $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION);
 
 $VERSION = '$Rev$';
-$RELEASE = 'v1.30';
+$RELEASE = 'v1.40';
 $NO_PREFS_IN_TOPIC = 1;
 $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 

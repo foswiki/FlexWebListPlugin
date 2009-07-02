@@ -87,6 +87,10 @@ that are replaced with a current value:
    * =$percnt=: replaced with a percent char (%)
    * =$dollar=: replaced with a dollar char ($)
    * =$nop=: removed from the format string before expanding common foswiki variables
+   * =$url=: link to homepage of web
+   * =$sitemapuseto=: content of the SITEMAPUSETO preference of the web
+   * =$sitemapwhat=: content of the SITEMAPWAT preference 
+   * =$color=: content of the WEBBGCOLOR preference
 
 The following picture illustrates when which format strings are used
 <div class="box">
@@ -147,8 +151,10 @@ See the FlexWebListExamples.
 |  Plugin Author: | Foswiki:Main.MichaelDaum |
 |  Copyright &copy;: | 2006-2009, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Plugin Version: | v1.30 |
+|  Release: | %$RELEASE% |
+|  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  02 Jul 2009: | added =$color=, =$sitemapuseto=, =$sitemapwhat= and =$url=; fixed examples |
 |  17 Apr 2009: | converted to foswiki |
 |  03 Jul 2008: | don't blat if there's a subweb with no parent web, habbens in Trash from time to time |
 |  15 Feb 2008: | explicitly disable unwanted webs |
@@ -174,4 +180,4 @@ See the FlexWebListExamples.
 |  Dependencies: | %$DEPENDENCIES% |
 |  Perl Version: | 5.8 |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Supprt/%TOPIC% |
+|  Support: | Foswiki:Support/%TOPIC% |
