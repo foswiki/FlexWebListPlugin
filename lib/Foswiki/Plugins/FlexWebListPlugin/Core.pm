@@ -16,6 +16,8 @@ package Foswiki::Plugins::FlexWebListPlugin::Core;
 
 use strict;
 
+use Foswiki::Func ();
+use Foswiki::Plugins ();
 use constant DEBUG => 0; # toggle me
 our $homeTopic;
 
@@ -34,6 +36,7 @@ sub new {
   #writeDebug("new FlexWebListPlugin::Core");
 
   $this->{webCache} = ();
+  $this->{session} = $Foswiki::Plugins::SESSION;
   $homeTopic = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
     || $Foswiki::cfg{HomeTopicName} || 'WebHome';
 
@@ -76,14 +79,16 @@ sub handler {
 
   $this->{selection} =~ s/\,/ /go;
   $this->{selection} = ' '.$this->{selection}.' ';
-  #writeDebug("include filter=/^($this->{include})\$/") if $this->{include};
+
+  $this->{include} =~ s/\//\\\//g;
+  writeDebug("include filter=/^($this->{include})\$/") if $this->{include};
   #writeDebug("exclude filter=/^($this->{exclude})\$/") if $this->{exclude};
 
   
   # compute map
   my $theMap = $params->{map} || '';
   $this->{map} = ();
-  foreach my $entry (split(/,\s*/, $theMap)) {
+  foreach my $entry (split(/\s*,\s*/, $theMap)) {
     if ($entry =~ /^(.*)=(.*)$/) {
       $this->{map}{$1} = $2;
     }
@@ -92,7 +97,7 @@ sub handler {
   # compute list
   my %seen;
   my @list = ();
-  my @websList = map {s/^\s+//go; s/\s+$//go; s/\./\//go; $_} split(/,\s*/, $this->{webs});
+  my @websList = map {s/^\s+//go; s/\s+$//go; s/\./\//go; $_} split(/\s*,\s*/, $this->{webs});
   #writeDebug("websList=".join(',', @websList));
   my $allWebs = $this->getWebs();
 
@@ -138,7 +143,7 @@ sub handler {
     my $web = $allWebs->{$aweb};
 
     # filter explicite subwebs
-    next if $this->{subWebs} !~ /^(all|none|only)$/ && $web->{key} !~ /$this->{subWebs}\/[^\/]*$/;
+    next if $web->{isSubWeb} && $this->{subWebs} !~ /^(all|none|only)$/ && $web->{key} !~ /$this->{subWebs}\/[^\/]*$/;
 
     # start recursion
     my $line = $this->formatWeb($web, $this->{format});
@@ -153,8 +158,8 @@ sub handler {
   return '' unless @result;
 
   my $result = join($this->{separator},@result);
-  $result =~ s/\$marker//g;
   $result = $this->{header}.$result.$this->{footer};
+  $result =~ s/\$marker//g;
   escapeParameter($result);
   #writeDebug("result=$result");
   $result = Foswiki::Func::expandCommonVariables($result, $currentTopic, $currentWeb);
@@ -178,10 +183,18 @@ sub formatWeb {
   my $subWebResult = '';
   my @lines;
   foreach my $subWeb (@{$web->{children}}) {
+    # filter explicite subwebs
+    next if $this->{subWebs} !~ /^(all|none|only)$/ && $subWeb->{key} !~ /$this->{subWebs}\/[^\/]*$/;
     my $line = $this->formatWeb($subWeb, $this->{subFormat}); # recurse
     push @lines, $line if $line;
   }
   if (@lines) {
+    my $header = $this->{subHeader};
+    my $footer = $this->{subFooter};
+    if ($this->{selection} =~ / \Q$web->{key}\E /) {
+      $header =~ s/\$marker/$this->{marker}/g;
+      $footer =~ s/\$marker/$this->{marker}/g;
+    }
     $subWebResult = $this->{subHeader}.join($this->{subSeparator},@lines).$this->{subFooter};
   }
 
@@ -200,7 +213,7 @@ sub formatWeb {
 
   my $url = '';
   if ($result =~ /\$url/) {
-    $url = Foswiki::Func::getScriptUrl($web->{key}, $homeTopic, 'view');
+    $url = $this->{session}->getScriptUrl(0, 'view', $web->{key}, $homeTopic);
   }
 
   my $sitemapUseTo = '';

@@ -119,14 +119,14 @@ needs the Foswiki:Extensions/TwistyPlugin
 
 
 ---++ Sitemap
-%~~ FLEXWEBLIST{
-~~~   webs="%MAINWEB%,public,%SYSTEMWEB%"
-~~~   header="<div class=\"header\">" 
-~~~   format="<div class=\"web\">
-~~~     [[$web.%HOMETOPIC%][$name]] $percntVAR{\"SITEMAPWHAT\" web=\"$web\"}$percnt
-~~~   </div>" 
-~~~   footer="</div>" 
-~~~ }%
+%FLEXWEBLIST{
+  webs="%MAINWEB%,public,%SYSTEMWEB%"
+  header="<div class=\"header\">" 
+  format="<div class=\"web\">
+    [[$web.%HOMETOPIC%][$name]] $percntVAR{\"SITEMAPWHAT\" web=\"$web\"}$percnt
+  </div>" 
+  footer="</div>" 
+}%
 <style type="text/css">
 .web,
 .header {

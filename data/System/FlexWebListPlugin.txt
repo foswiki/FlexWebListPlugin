@@ -154,6 +154,7 @@ See the FlexWebListExamples.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  17 Nov 2009: | fixed processing subwebs and marker format |
 |  02 Jul 2009: | added =$color=, =$sitemapuseto=, =$sitemapwhat= and =$url=; fixed examples |
 |  17 Apr 2009: | converted to foswiki |
 |  03 Jul 2008: | don't blat if there's a subweb with no parent web, habbens in Trash from time to time |
