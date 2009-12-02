@@ -143,7 +143,7 @@ sub handler {
     my $web = $allWebs->{$aweb};
 
     # filter explicite subwebs
-    next if $web->{isSubWeb} && $this->{subWebs} !~ /^(all|none|only)$/ && $web->{key} !~ /$this->{subWebs}\/[^\/]*$/;
+    next if $this->{subWebs} !~ /^(all|none|only)$/ && $web->{key} !~ /$this->{subWebs}\/[^\/]*$/;
 
     # start recursion
     my $line = $this->formatWeb($web, $this->{format});

@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1198821769" format="1.1" version="$Rev$"}%
+%META:TOPICINFO{author="ProjectContributor" date="1259753380" format="1.1" version="1.2"}%
 <!--
 
    PLEASE DO NOT EDIT THIS TOPIC
@@ -154,6 +154,7 @@ See the FlexWebListExamples.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  02 Dec 2009: | fixed regexing for subwebs |
 |  17 Nov 2009: | fixed processing subwebs and marker format |
 |  02 Jul 2009: | added =$color=, =$sitemapuseto=, =$sitemapwhat= and =$url=; fixed examples |
 |  17 Apr 2009: | converted to foswiki |
