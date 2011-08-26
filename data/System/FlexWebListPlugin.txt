@@ -56,6 +56,7 @@ Parameters:
    * =exclude=: regular expression of items excluded from the output
    * =include=: regular expressions of items that must match in order to be
      included in the output
+   * =ignorecase=: on/off; if switched on =include= and =exclude= checks are done case-insensitive (defaults to off)
    * =adminwebs=: a regular expression of webs that are considered to be only relevant for 
      <nop>WikiAdmins and are hiddend to non-admin users. In general it is recommended to
      hide webs by restricting access rights to it. There are however cases when you want to hide a web
@@ -137,7 +138,7 @@ The following picture illustrates when which format strings are used
 </style>
 
 ---++ Examples
-See the FlexWebListExamples.
+See FlexWebListExamples and FlexWebListTree.
 
 ---++ Plugin Installation Instructions
 %$INSTALL_INSTRUCTIONS%
@@ -149,11 +150,12 @@ See the FlexWebListExamples.
 -->
 
 |  Plugin Author: | Foswiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2006-2009, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2006-2011, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  25 Aug 2011: | added ignorecase paramete; improved documentation |
 |  02 Dec 2009: | fixed regexing for subwebs |
 |  17 Nov 2009: | fixed processing subwebs and marker format |
 |  02 Jul 2009: | added =$color=, =$sitemapuseto=, =$sitemapwhat= and =$url=; fixed examples |

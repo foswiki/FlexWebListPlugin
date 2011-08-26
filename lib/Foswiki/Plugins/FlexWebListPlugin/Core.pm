@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2009 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2011 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -70,6 +70,7 @@ sub handler {
   $this->{include} = $params->{include} || '';
   $this->{subWebs} = $params->{subwebs} || 'all';
   $this->{adminwebs} = $params->{adminwebs} || '';
+  $this->{ignorecase} = $params->{ignorecase} || 'off';
 
   if ($this->{adminwebs}) {
     $this->{isAdmin} = isAdmin();
@@ -130,8 +131,13 @@ sub handler {
     next unless $web;
     $web->{enabled} = 0;
     next if $web->{isSubWeb} && $this->{subWebs} eq 'none';
-    next if $this->{exclude} ne '' && $web->{key} =~ /^($this->{exclude})$/;
-    next if $this->{include} ne '' && $web->{key} !~ /^($this->{include})$/;
+    if ($this->{ignorecase} eq 'on') {
+      next if $this->{exclude} ne '' && $web->{key} =~ /^($this->{exclude})$/i;
+      next if $this->{include} ne '' && $web->{key} !~ /^($this->{include})$/i;
+    } else {
+      next if $this->{exclude} ne '' && $web->{key} =~ /^($this->{exclude})$/;
+      next if $this->{include} ne '' && $web->{key} !~ /^($this->{include})$/;
+    }
     next if $this->{adminwebs} ne '' && !$this->{isAdmin} &&
       $web->{key} =~ /^($this->{adminwebs})$/;
     $web->{enabled} = 1;
@@ -279,7 +285,6 @@ sub getWebs {
 
   my @webs = ();
   
-  # dakar
   if ($filter eq 'public') {
     @webs = Foswiki::Func::getListOfWebs('user,public,allowed');
   } elsif ($filter eq 'webtemplate') {

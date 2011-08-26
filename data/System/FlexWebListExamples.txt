@@ -16,9 +16,9 @@ for a better illustration of the examples below.
 
 ---++ Influencing order
 <verbatim>
-%FLEXWEBLIST{webs="%MAINWEB%,public,%SYSTEMWEB%"}%
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%"}%
 </verbatim>
-%FLEXWEBLIST{webs="%MAINWEB%,public,%SYSTEMWEB%"}%
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%"}%
 
 ---++ Controlling subwebs
 ---+++ No subwebs
@@ -120,10 +120,10 @@ needs the Foswiki:Extensions/TwistyPlugin
 
 ---++ Sitemap
 %FLEXWEBLIST{
-  webs="%MAINWEB%,public,%SYSTEMWEB%"
+  webs="%USERSWEB%,public,%SYSTEMWEB%"
   header="<div class=\"header\">" 
   format="<div class=\"web\">
-    [[$web.%HOMETOPIC%][$name]] $percntVAR{\"SITEMAPWHAT\" web=\"$web\"}$percnt
+    [[$web.%HOMETOPIC%][$name]] $percntVAR{\"WEBSUMMARY\" web=\"$web\"}$percnt
   </div>" 
   footer="</div>" 
 }%

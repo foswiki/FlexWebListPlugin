@@ -8,7 +8,7 @@ This uses the jqTreeview widget of the Foswiki:Extensions/JQueryPlugin.
 Use it by adding =%<nop>INCLUDE{"%WEB%.%TOPIC%"}%= to your sidebar navigation.
 
 If you want to hide the web navigation from <nop>WikiGuests then uncomment the following:
-   * #Set DENYTOPICVIEW = %MAINWEB%.WikiGuest
+   * #Set DENYTOPICVIEW = %USERSWEB%.WikiGuest
 
 <verbatim>
 %STARTINCLUDE%<!-- flexweblist tree -->
@@ -16,7 +16,7 @@ If you want to hide the web navigation from <nop>WikiGuests then uncomment the f
 <div class="jqTreeview closed unique">
 %JQICON{"house"}% - <nop>%WIKITOOLNAME%
 %FLEXWEBLIST{
-  webs="%MAINWEB%,User,People,public,%SYSTEMWEB%" 
+  webs="%USERSWEB%,User,People,public,%SYSTEMWEB%" 
   exclude="^(TestCases|Trash).*" 
   adminwebs="Applications.*"
   map="%SYSTEMWEB%=System"
