@@ -50,7 +50,7 @@ sub handler {
   #writeDebug("*** called %FLEXWEBLIST{".$params->stringify."}%");
 
   # extract parameters
-  $this->{format} = $params->{_DEFAULT} || $params->{format};
+  $this->{format} = $params->{_DEFAULT} unless defined $params->{format};
   $this->{format} = '$web ' unless defined $params->{format};
   $this->{webs} = $params->{webs} || 'public';
   $this->{header} = $params->{header} || '';
