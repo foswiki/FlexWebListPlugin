@@ -17,30 +17,27 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use vars qw( $VERSION $RELEASE $core $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION);
 
-$VERSION           = '$Rev$';
-$RELEASE           = '1.61';
+$VERSION = '$Rev$';
+$RELEASE = '1.61';
 $NO_PREFS_IN_TOPIC = 1;
-$SHORTDESCRIPTION  = 'Flexible way to display hierarchical weblists';
+$SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 
 ###############################################################################
 sub initPlugin {
-    $core = undef;
-    Foswiki::Func::registerTagHandler(
-        'FLEXWEBLIST',
-        sub {
-            return newCore()->handler(@_);
-        }
-    );
-    return 1;
+  $core = undef;
+  Foswiki::Func::registerTagHandler('FLEXWEBLIST', sub {
+    return newCore()->handler(@_);
+  });
+  return 1;
 }
 
 ###############################################################################
 sub newCore {
 
-    return $core if $core;
-    require Foswiki::Plugins::FlexWebListPlugin::Core;
-    $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
-    return $core;
+  return $core if $core;
+  require Foswiki::Plugins::FlexWebListPlugin::Core;
+  $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
+  return $core;
 }
 
 1;
