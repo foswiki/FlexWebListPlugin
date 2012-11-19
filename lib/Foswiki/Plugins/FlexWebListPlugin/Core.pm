@@ -15,11 +15,15 @@
 package Foswiki::Plugins::FlexWebListPlugin::Core;
 
 use strict;
+use warnings;
 
 use Foswiki::Func ();
 use Foswiki::Plugins ();
+use Foswiki::Meta ();
+use Foswiki::WebFilter ();
+
 use constant DEBUG => 0; # toggle me
-our $homeTopic;
+our $webIterator; # cached version ... invalidated on a web rename
 
 ###############################################################################
 # static
@@ -35,10 +39,11 @@ sub new {
 
   #writeDebug("new FlexWebListPlugin::Core");
 
-  $this->{webCache} = ();
   $this->{session} = $Foswiki::Plugins::SESSION;
-  $homeTopic = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
+  $this->{homeTopic} = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
     || $Foswiki::cfg{HomeTopicName} || 'WebHome';
+
+  #$webIterator = undef;#DEBUG;
 
   return $this;
 }
@@ -230,7 +235,7 @@ sub formatWeb {
 
   my $url = '';
   if ($result =~ /\$url/) {
-    $url = $this->{session}->getScriptUrl(0, 'view', $web->{key}, $homeTopic);
+    $url = $this->{session}->getScriptUrl(0, 'view', $web->{key}, $this->{homeTopic});
   }
 
   my $sitemapUseTo = '';
@@ -282,33 +287,52 @@ sub formatWeb {
 }
 
 ###############################################################################
+sub getWebIterator {
+  my $this = shift;
+
+  if (defined $webIterator) {
+    $webIterator->reset;
+  } else {
+    my $webObject = new Foswiki::Meta($this->{session});
+    $webIterator = $webObject->eachWeb($Foswiki::cfg{EnableHierarchicalWebs});
+  }
+
+  return $webIterator;
+}
+
+###############################################################################
 # get a hash of all webs, each web points to its subwebs, each subweb points
 # to its parent
 sub getWebs {
-  my ($this,$filter) = @_;
+  my ($this, $filter) = @_;
 
   $filter ||= '';
 
   #writeDebug("getWebs($filter)");
 
-  # lookup cache 
-  return $this->{webCache}{$filter} if defined $this->{webCache}{$filter};
+  # lookup cache
+  my $wit = $this->getWebIterator;
 
   my @webs = ();
-  
-  if ($filter eq 'public') {
-    @webs = Foswiki::Func::getListOfWebs('user,public,allowed');
-  } elsif ($filter eq 'webtemplate') {
-    @webs = Foswiki::Func::getListOfWebs('template,allowed');
+  if ($filter) {
+    $filter = 'user,public,allowed' if $filter eq 'public';
+    $filter = 'template,allowed' if $filter eq 'webtemplate';
+
+    my $filter = new Foswiki::WebFilter($filter);
+
+    while ($wit->hasNext()) {
+      my $w = '';
+      $w .= '/' if $w;
+      $w .= $wit->next();
+      push @webs, $w if $filter->ok($this->{session}, $w);
+    }
   } else {
-    @webs = Foswiki::Func::getListOfWebs($filter);
+    @webs = $wit->all();
   }
+
   my $webs = $this->hashWebs(@webs);
 
-  # cache weblist
-  $this->{webCache}{$filter} = $webs;
-
-  #writeDebug("result=".join(',',@webs));
+  writeDebug("result=".join(',',@webs));
   return $webs;
 }
 

@@ -1,15 +1,7 @@
 %META:TOPICINFO{author="ProjectContributor" date="1259753380" format="1.1" version="1.2"}%
-<!--
-
-   PLEASE DO NOT EDIT THIS TOPIC
-
-   It is automatically generated from the subversion repository, and any changes
-   you make will simply be overwritten the next time a release is generated.
-
-   Instead, you could check your fix in, raise a bug in the Bugs web, or mail the author.
--->
 ---+!! <nop>%TOPIC%
 %TOC%
+
 ---++ Description
 This is a replacement for Foswiki's standard [[%SYSTEMWEB%.VarWEBLIST][WEBLIST]] variable.
 It is extended to improve the display of hierarchical web structures,
@@ -155,6 +147,7 @@ See FlexWebListExamples and FlexWebListTree.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  19 Nov 2012: | improve performance on large foswikis by caching a webs iterator to be reused |
 |  10 Jan 2012: | fixed setting format strings to the empty string |
 |  25 Aug 2011: | added ignorecase paramete; improved documentation |
 |  02 Dec 2009: | fixed regexing for subwebs |
@@ -183,6 +176,5 @@ See FlexWebListExamples and FlexWebListTree.
 |  26 Jul 2006: | first release |
 |  05 Jul 2006: | initial version |
 |  Dependencies: | %$DEPENDENCIES% |
-|  Perl Version: | 5.8 |
 |  Plugin Home: | Foswiki:Extensions/%TOPIC% |
 |  Support: | Foswiki:Support/%TOPIC% |

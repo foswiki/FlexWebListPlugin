@@ -15,28 +15,44 @@
 package Foswiki::Plugins::FlexWebListPlugin;
 
 use strict;
-use vars qw( $VERSION $RELEASE $core $NO_PREFS_IN_TOPIC $SHORTDESCRIPTION);
+use warnings;
 
-$VERSION = '$Rev$';
-$RELEASE = '1.61';
-$NO_PREFS_IN_TOPIC = 1;
-$SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
+our $VERSION = '1.70';
+our $RELEASE = '1.70';
+our $NO_PREFS_IN_TOPIC = 1;
+our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
+our $core;
 
 ###############################################################################
 sub initPlugin {
+
   $core = undef;
+
   Foswiki::Func::registerTagHandler('FLEXWEBLIST', sub {
-    return newCore()->handler(@_);
+    return getCore()->handler(@_);
   });
   return 1;
 }
 
 ###############################################################################
-sub newCore {
+sub afterRenameHandler {
+  my ($oldWeb, $oldTopic, $oldAttachment, $newWeb, $newTopic, $newAttachment) = @_;
 
-  return $core if $core;
+  return if $oldTopic;
+
+  # rename web detected
   require Foswiki::Plugins::FlexWebListPlugin::Core;
-  $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
+  $Foswiki::Plugins::FlexWebListPlugin::Core::webIterator = undef;
+}
+
+###############################################################################
+sub getCore {
+
+  unless (defined $core) {
+    require Foswiki::Plugins::FlexWebListPlugin::Core;
+    $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
+  }
+
   return $core;
 }
 
