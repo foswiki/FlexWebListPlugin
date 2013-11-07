@@ -142,11 +142,12 @@ See FlexWebListExamples and FlexWebListTree.
 -->
 
 |  Plugin Author: | Foswiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2006-2012, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2006-2013, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  07 Nov 2013: | fixed caching issue |
 |  19 Nov 2012: | improve performance on large foswikis by caching a webs iterator to be reused |
 |  10 Jan 2012: | fixed setting format strings to the empty string |
 |  25 Aug 2011: | added ignorecase paramete; improved documentation |

@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2012 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2013 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -23,7 +23,7 @@ use Foswiki::Meta ();
 use Foswiki::WebFilter ();
 
 use constant DEBUG => 0; # toggle me
-our $webIterator; # cached version ... invalidated on a web rename
+use constant CACHE_WEBS => 1;
 
 ###############################################################################
 # static
@@ -35,15 +35,13 @@ sub writeDebug {
 # constructor
 sub new {
   my $class = shift;
-  my $this = bless({}, $class);
+
+  my $this = bless({@_}, $class);
 
   #writeDebug("new FlexWebListPlugin::Core");
 
-  $this->{session} = $Foswiki::Plugins::SESSION;
   $this->{homeTopic} = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
     || $Foswiki::cfg{HomeTopicName} || 'WebHome';
-
-  #$webIterator = undef;#DEBUG;
 
   return $this;
 }
@@ -201,6 +199,8 @@ sub formatWeb {
 
   #writeDebug("formatWeb($web->{key})");
 
+  my $session = $Foswiki::Plugins::SESSION;
+
   # format all subwebs recursively
   my $subWebResult = '';
   my @lines;
@@ -235,7 +235,7 @@ sub formatWeb {
 
   my $url = '';
   if ($result =~ /\$url/) {
-    $url = $this->{session}->getScriptUrl(0, 'view', $web->{key}, $this->{homeTopic});
+    $url = $session->getScriptUrl(0, 'view', $web->{key}, $this->{homeTopic});
   }
 
   my $sitemapUseTo = '';
@@ -290,14 +290,14 @@ sub formatWeb {
 sub getWebIterator {
   my $this = shift;
 
-  if (defined $webIterator) {
-    $webIterator->reset;
+  if (defined $this->{webIterator} && CACHE_WEBS) {
+    $this->{webIterator}->reset;
   } else {
-    my $webObject = new Foswiki::Meta($this->{session});
-    $webIterator = $webObject->eachWeb($Foswiki::cfg{EnableHierarchicalWebs});
+    my @webs = Foswiki::Func::getListOfWebs();
+    $this->{webIterator} = new Foswiki::ListIterator(\@webs);
   }
 
-  return $webIterator;
+  return $this->{webIterator};
 }
 
 ###############################################################################
@@ -306,6 +306,7 @@ sub getWebIterator {
 sub getWebs {
   my ($this, $filter) = @_;
 
+  my $session = $Foswiki::Plugins::SESSION;
   $filter ||= '';
 
   #writeDebug("getWebs($filter)");
@@ -324,7 +325,7 @@ sub getWebs {
       my $w = '';
       $w .= '/' if $w;
       $w .= $wit->next();
-      push @webs, $w if $filter->ok($this->{session}, $w);
+      push @webs, $w if $filter->ok($session, $w);
     }
   } else {
     @webs = $wit->all();
