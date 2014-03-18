@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2013 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2014 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,6 +44,13 @@ sub new {
     || $Foswiki::cfg{HomeTopicName} || 'WebHome';
 
   return $this;
+}
+
+###############################################################################
+sub reset {
+  my $this = shift;
+
+  undef $this->{webIterator};
 }
 
 ###############################################################################
@@ -260,6 +267,13 @@ sub formatWeb {
     $sitemapWhat =~ s/#nop#/<nop>/g;
   }
 
+  my $summary = $sitemapWhat || '';
+  if ($result =~ /\$summary/) {
+    $summary = Foswiki::Func::getPreferencesValue('WEBSUMMARY', $web->{key}) || '';
+    $summary =~ s/<nop>//g;
+  }
+
+
   my $color = '';
   if ($result =~ /\$color/) {
     $color =
@@ -278,6 +292,7 @@ sub formatWeb {
   $result =~ s/\$url/$url/g;
   $result =~ s/\$sitemapuseto/$sitemapUseTo/g;
   $result =~ s/\$sitemapwhat/$sitemapWhat/g;
+  $result =~ s/\$summary/$summary/g;
   $result =~ s/\$color/$color/g;
 
   #writeDebug("result=$result");
@@ -412,7 +427,4 @@ sub escapeParameter {
   $_[0] =~ s/\$dollar/\$/g;
 }
 
-
-
-###############################################################################
 1;

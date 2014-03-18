@@ -81,8 +81,9 @@ that are replaced with a current value:
    * =$dollar=: replaced with a dollar char ($)
    * =$nop=: removed from the format string before expanding common foswiki variables
    * =$url=: link to homepage of web
-   * =$sitemapuseto=: content of the SITEMAPUSETO preference of the web
-   * =$sitemapwhat=: content of the SITEMAPWAT preference 
+   * =$sitemapuseto=: content of the SITEMAPUSETO preference of the web (deprecated; use =$summary=)
+   * =$sitemapwhat=: content of the SITEMAPWAT preference (deprecated; use =$summary=)
+   * =$summary=: content of the WEBSUMMARY preference 
    * =$color=: content of the WEBBGCOLOR preference
 
 The following picture illustrates when which format strings are used
@@ -142,11 +143,12 @@ See FlexWebListExamples and FlexWebListTree.
 -->
 
 |  Plugin Author: | Foswiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2006-2013, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2006-2014, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  18 Nov 2014: | support =WEBSUMMARY=;  deprecate =SITEMAPWAT= and =SITEMAPUSETO= |
 |  07 Nov 2013: | fixed caching issue |
 |  19 Nov 2012: | improve performance on large foswikis by caching a webs iterator to be reused |
 |  10 Jan 2012: | fixed setting format strings to the empty string |
