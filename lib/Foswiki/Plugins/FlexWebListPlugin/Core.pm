@@ -22,13 +22,13 @@ use Foswiki::Plugins ();
 use Foswiki::Meta ();
 use Foswiki::WebFilter ();
 
-use constant DEBUG => 0; # toggle me
+use constant TRACE => 0; # toggle me
 use constant CACHE_WEBS => 1;
 
 ###############################################################################
 # static
 sub writeDebug {
-  print STDERR '- FlexWebListPlugin - '.$_[0]."\n" if DEBUG;
+  print STDERR '- FlexWebListPlugin - '.$_[0]."\n" if TRACE;
 }
 
 ###############################################################################
@@ -187,9 +187,8 @@ sub handler {
   my $result = join($this->{separator},@result);
   $result = $this->{header}.$result.$this->{footer};
   $result =~ s/\$marker//g;
+
   escapeParameter($result);
-  #writeDebug("result=$result");
-  $result = Foswiki::Func::expandCommonVariables($result, $currentTopic, $currentWeb);
 
   #writeDebug("*** handler done");
 
@@ -421,9 +420,9 @@ sub isAdmin {
 sub escapeParameter {
   return '' unless $_[0];
 
+  $_[0] =~ s/\$perce?nt/%/g;
   $_[0] =~ s/\$nop//g;
   $_[0] =~ s/\$n/\n/g;
-  $_[0] =~ s/\$percnt/%/g;
   $_[0] =~ s/\$dollar/\$/g;
 }
 
