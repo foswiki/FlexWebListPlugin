@@ -19,7 +19,6 @@ use warnings;
 
 use Foswiki::Func ();
 use Foswiki::Plugins ();
-use Foswiki::Meta ();
 use Foswiki::WebFilter ();
 
 use constant TRACE => 0; # toggle me
@@ -272,6 +271,11 @@ sub formatWeb {
     $summary =~ s/<nop>//g;
   }
 
+  my $title = $name || '';
+  if ($result =~ /\$title/) {
+    $title = getTopicTitle($web->{key}, $this->{homeTopic});
+  }
+
 
   my $color = '';
   if ($result =~ /\$color/) {
@@ -279,12 +283,13 @@ sub formatWeb {
       Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) || '';
   }
 
-  $result =~ s/\$parent/$web->{parentName}/go;
-  $result =~ s/\$name/$name/go;
-  $result =~ s/\$origname/$web->{name}/go;
+  $result =~ s/\$parent/$web->{parentName}/g;
+  $result =~ s/\$name/$name/g;
+  $result =~ s/\$title/$title/g;
+  $result =~ s/\$origname/$web->{name}/g;
   $result =~ s/\$qname/"$web->{key}"/g;# historical
-  $result =~ s/\$web/$web->{key}/go;
-  $result =~ s/\$depth/$web->{depth}/go;
+  $result =~ s/\$web/$web->{key}/g;
+  $result =~ s/\$depth/$web->{depth}/g;
   $result =~ s/\$indent\((.+?)\)/$1 x $web->{depth}/ge;
   $result =~ s/\$indent/'   ' x $web->{depth}/ge;
   $result =~ s/\$nrsubwebs/$nrSubWebs/g;
@@ -425,5 +430,43 @@ sub escapeParameter {
   $_[0] =~ s/\$n/\n/g;
   $_[0] =~ s/\$dollar/\$/g;
 }
+
+###############################################################################
+sub getTopicTitle {
+  my ($web, $topic) = @_;
+
+  my ($meta, $text) = Foswiki::Func::readTopic($web, $topic);
+
+  if ($Foswiki::cfg{SecureTopicTitles}) {
+    my $wikiName = Foswiki::Func::getWikiName();
+    return $topic
+      unless Foswiki::Func::checkAccessPermission('VIEW', $wikiName, $text, $topic, $web, $meta);
+  }
+
+  # read the formfield value
+  my $title = $meta->get('FIELD', 'TopicTitle');
+  $title = $title->{value} if $title;
+
+  # read the topic preference
+  unless ($title) {
+    $title = $meta->get('PREFERENCE', 'TOPICTITLE');
+    $title = $title->{value} if $title;
+  }
+
+  # read the preference
+  unless ($title)  {
+    Foswiki::Func::pushTopicContext($web, $topic);
+    $title = Foswiki::Func::getPreferencesValue('TOPICTITLE');
+    Foswiki::Func::popTopicContext();
+  }
+
+  # default to topic name
+  $title ||= $topic;
+
+  $title =~ s/\s*$//;
+  $title =~ s/^\s*//;
+
+  return $title;
+} 
 
 1;

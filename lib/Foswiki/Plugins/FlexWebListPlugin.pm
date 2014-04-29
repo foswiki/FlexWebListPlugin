@@ -17,8 +17,8 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '1.81';
-our $RELEASE = '1.81';
+our $VERSION = '1.90';
+our $RELEASE = '1.90';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 our $core;
@@ -46,6 +46,8 @@ sub afterRenameHandler {
   my ($oldWeb, $oldTopic, $oldAttachment, $newWeb, $newTopic, $newAttachment) = @_;
 
   return if $oldTopic;
+
+  # SMELL: does not fire on web-creation
   core->reset;
 }
 

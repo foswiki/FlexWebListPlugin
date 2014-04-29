@@ -68,6 +68,7 @@ that are replaced with a current value:
    * =$web=: the full name of the web, e.g. =Main/Foo/Bar=
    * =$qname=: the full name of the web in quotes, e.g. ="Main/Foo/Bar"= (deprecated)
    * =$name=: the name of the web without the leading parent webs, e.g. =Bar=
+   * =$title=: the title of the web as specified in the !TopicTitle of the !WebHome topic
    * =$origname=: the original name of the web despite any name mapping
    * =$parent=: the name of the parent web of a sub web or the empty string if there's none
    * =$marker=: marker text (see above) if the current item is selected, empty otherwise
@@ -148,7 +149,8 @@ See FlexWebListExamples and FlexWebListTree.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
-|  18 Nov 2014: | support =WEBSUMMARY=;  deprecate =SITEMAPWAT= and =SITEMAPUSETO= |
+|  28 Apr 2014: | added support for !TopicTitle |
+|  18 Nov 2013: | support =WEBSUMMARY=;  deprecate =SITEMAPWAT= and =SITEMAPUSETO= |
 |  07 Nov 2013: | fixed caching issue |
 |  19 Nov 2012: | improve performance on large foswikis by caching a webs iterator to be reused |
 |  10 Jan 2012: | fixed setting format strings to the empty string |
