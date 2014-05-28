@@ -149,6 +149,7 @@ See FlexWebListExamples and FlexWebListTree.
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  28 May 2014: | !TopicTitle defaults to web name (not !WebHome) if not set otherwise |
 |  28 Apr 2014: | added support for !TopicTitle |
 |  18 Nov 2013: | support =WEBSUMMARY=;  deprecate =SITEMAPWAT= and =SITEMAPUSETO= |
 |  07 Nov 2013: | fixed caching issue |

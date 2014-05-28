@@ -274,6 +274,7 @@ sub formatWeb {
   my $title = $name || '';
   if ($result =~ /\$title/) {
     $title = getTopicTitle($web->{key}, $this->{homeTopic});
+    $title = $name if $title eq $this->{homeTopic};
   }
 
 

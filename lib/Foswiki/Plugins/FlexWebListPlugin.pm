@@ -17,8 +17,8 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '1.90';
-our $RELEASE = '1.90';
+our $VERSION = '1.91';
+our $RELEASE = '1.91';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 our $core;
