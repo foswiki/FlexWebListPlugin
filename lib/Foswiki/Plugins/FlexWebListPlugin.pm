@@ -17,17 +17,21 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '1.91';
-our $RELEASE = '1.91';
+our $VERSION = '1.92';
+our $RELEASE = '1.92';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
-our $core;
+our %cores = ();
 
 sub core {
 
-  unless (defined $core) {
+  # Item12972: get the core for this host; note there might be separate cores
+  # when using VirtualHostingContrib
+  my $core = $cores{$Foswiki::cfg{DefaultUrlHost}};
+
+  unless ($core) {
     require Foswiki::Plugins::FlexWebListPlugin::Core;
-    $core = new Foswiki::Plugins::FlexWebListPlugin::Core;
+    $core = $cores{$Foswiki::cfg{DefaultUrlHost}} = Foswiki::Plugins::FlexWebListPlugin::Core->new();
   }
 
   return $core;
