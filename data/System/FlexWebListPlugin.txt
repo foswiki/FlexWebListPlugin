@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1411736309" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1437150802" format="1.1" version="1"}%
 ---+!! <nop>%TOPIC%
 %TOC%
 
@@ -144,11 +144,12 @@ See FlexWebListExamples and FlexWebListTree.
 -->
 
 |  Plugin Author: | Foswiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2006-2014, Michael Daum http://michaeldaumconsulting.com |
+|  Copyright &copy;: | 2006-2015, Michael Daum http://michaeldaumconsulting.com |
 |  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
 |  Release: | %$RELEASE% |
 |  Version: | %$VERSION% |
 |  Change History: | &nbsp; |
+|  17 Jul 2015: | more caching issues fixed |
 |  26 Sep 2014: | fixed caching issue when using Foswiki:Extensions/VirtualHostingContrib (Foswiki:Main/MaikGlatki) |
 |  28 May 2014: | !TopicTitle defaults to web name (not !WebHome) if not set otherwise |
 |  28 Apr 2014: | added support for !TopicTitle |
