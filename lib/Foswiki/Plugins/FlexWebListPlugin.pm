@@ -17,13 +17,22 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '1.93';
-our $RELEASE = '1.93';
+our $VERSION = '2.00';
+our $RELEASE = '25 Sep 2015';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 our %cores = ();
 
-sub core {
+sub initPlugin {
+
+  Foswiki::Func::registerTagHandler('FLEXWEBLIST', sub {
+    return getCore()->handler(@_);
+  });
+
+  return 1;
+}
+
+sub getCore() {
 
   # Item12972: get the core for this host; note there might be separate cores
   # when using VirtualHostingContrib
@@ -37,15 +46,6 @@ sub core {
   return $core;
 }
 
-sub initPlugin {
-
-  Foswiki::Func::registerTagHandler('FLEXWEBLIST', sub {
-    return core->handler(@_);
-  });
-
-  return 1;
-}
-
 sub finishPlugin {
   %cores = ();
 }
@@ -56,7 +56,7 @@ sub afterRenameHandler {
   return if $oldTopic;
 
   # SMELL: does not fire on web-creation
-  core->reset;
+  getCore()->reset;
 }
 
 

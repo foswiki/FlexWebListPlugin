@@ -1,5 +1,7 @@
 %META:TOPICINFO{author="ProjectContributor" date="1437150802" format="1.1" version="1"}%
 ---+!! <nop>%TOPIC%
+%SHORTDESCRIPTION%
+
 %TOC%
 
 ---++ Description
@@ -132,23 +134,17 @@ The following picture illustrates when which format strings are used
 </style>
 
 ---++ Examples
-See FlexWebListExamples and FlexWebListTree.
+See [[FlexWebListExamples]] and [[FlexWebListTree]].
 
 ---++ Plugin Installation Instructions
 %$INSTALL_INSTRUCTIONS%
 
+---++ Dependencies
+%$DEPENDENCIES%
 
----++ Plugin Info
-<!-- provided for compatibility only
-   * Set SHORTDESCRIPTION = Flexible way to display hierarchical weblists
--->
+---++ Change History
 
-|  Plugin Author: | Foswiki:Main.MichaelDaum |
-|  Copyright &copy;: | 2006-2015, Michael Daum http://michaeldaumconsulting.com |
-|  License: | GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]]) |
-|  Release: | %$RELEASE% |
-|  Version: | %$VERSION% |
-|  Change History: | &nbsp; |
+%TABLE{columnwidths="7em" tablewidth="100%"}%
 |  17 Jul 2015: | more caching issues fixed |
 |  26 Sep 2014: | fixed caching issue when using Foswiki:Extensions/VirtualHostingContrib (Foswiki:Main/MaikGlatki) |
 |  28 May 2014: | !TopicTitle defaults to web name (not !WebHome) if not set otherwise |
@@ -183,6 +179,17 @@ See FlexWebListExamples and FlexWebListTree.
 |  28 Jul 2006: | preserve order in webs parameter |
 |  26 Jul 2006: | first release |
 |  05 Jul 2006: | initial version |
-|  Dependencies: | %$DEPENDENCIES% |
-|  Plugin Home: | Foswiki:Extensions/%TOPIC% |
-|  Support: | Foswiki:Support/%TOPIC% |
+
+<!-- 
+   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
+-->
+
+%META:FORM{name="PackageForm"}%
+%META:FIELD{name="Author" title="Author" value="Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2006-2015, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/FlexWebListPlugin"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
+%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
