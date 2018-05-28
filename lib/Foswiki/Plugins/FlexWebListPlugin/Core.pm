@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2015 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2018 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ use warnings;
 
 use Foswiki::Func ();
 use Foswiki::Plugins ();
-use Foswiki::WebFilter ();
+use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
 
 use constant TRACE => 0; # toggle me
 use constant CACHE_WEBS => 1;
@@ -60,37 +60,26 @@ sub handler {
 
   # extract parameters
   $this->{format} = $params->{_DEFAULT};
-  $this->{format} = $params->{format} unless defined $this->{format};
-  $this->{format} = '$web ' unless defined $this->{format};
-  $this->{webs} = $params->{webs} || 'public';
-  $this->{header} = $params->{header} || '';
-  $this->{footer} = $params->{footer} || '';
-  $this->{separator} = $params->{separator} || '';
+  $this->{format} //= $params->{format};
+  $this->{format} //= '$web';
+  $this->{webs} = $params->{webs} // 'public';
+  $this->{header} = $params->{header} // '';
+  $this->{footer} = $params->{footer} // '';
+  $this->{separator} = $params->{separator} // '';
   $this->{separator} = '' if $this->{separator} eq 'none';
-
-  $this->{subHeader} = $params->{subheader};
-  $this->{subHeader} = $this->{header} unless defined $this->{subHeader};
-
-  $this->{subFormat} = $params->{subformat};
-  $this->{subFormat} = $this->{format} unless defined $this->{subFormat};
-
-  $this->{subFooter} = $params->{subfooter};
-  $this->{subFooter} = $this->{footer} unless defined $this->{subFooter};
-
-  $this->{subSeparator} = $params->{subseparator};
-  $this->{subSeparator} = $this->{separator} unless defined $this->{subSeparator};
+  $this->{subHeader} = $params->{subheader} // $this->{header};
+  $this->{subFormat} = $params->{subformat} // $this->{format};
+  $this->{subFooter} = $params->{subfooter} // $this->{footer};
+  $this->{subSeparator} = $params->{subseparator} // $this->{separator};
   $this->{subSeparator} = '' if $this->{subSeparator} eq 'none';
-
-  $this->{markerFormat} = $params->{markerformat};
-  $this->{markerFormat} = $this->{format} unless defined $this->{markerFormat};
-
-  $this->{selection} = $params->{selection} || '';
-  $this->{marker} = $params->{marker} || '';
-  $this->{exclude} = $params->{exclude} || '';
-  $this->{include} = $params->{include} || '';
-  $this->{subWebs} = $params->{subwebs} || 'all';
-  $this->{adminwebs} = $params->{adminwebs} || '';
-  $this->{ignorecase} = $params->{ignorecase} || 'off';
+  $this->{markerFormat} = $params->{markerformat} // $this->{format};
+  $this->{selection} = $params->{selection} // '';
+  $this->{marker} = $params->{marker} // '';
+  $this->{exclude} = $params->{exclude} // '';
+  $this->{include} = $params->{include} // '';
+  $this->{subWebs} = $params->{subwebs} // 'all';
+  $this->{adminwebs} = $params->{adminwebs} // '';
+  $this->{ignorecase} = $params->{ignorecase} // 'off';
 
   if ($this->{adminwebs}) {
     $this->{isAdmin} = isAdmin();
@@ -107,7 +96,7 @@ sub handler {
 
   
   # compute map
-  my $theMap = $params->{map} || '';
+  my $theMap = $params->{map} // '';
   $this->{map} = ();
   foreach my $entry (split(/\s*,\s*/, $theMap)) {
     if ($entry =~ /^(.*)=(.*)$/) {
@@ -124,7 +113,7 @@ sub handler {
 
   # collect the list in preserving the given order in webs parameter
   foreach my $aweb (@websList) {
-    if ($aweb =~ /^(public|webtemplate)(current)?$/) {
+    if ($aweb =~ /^(public|webtemplate|sitemap|user)(current)?$/) {
       $aweb = $1;
       my @webs;
       if (defined $2 && Foswiki::Func::webExists($currentWeb)) {
@@ -246,7 +235,7 @@ sub formatWeb {
   my $sitemapUseTo = '';
   if ($result =~ /\$sitemapuseto/) {
     $sitemapUseTo = 
-      Foswiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) || '';
+      Foswiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) // '';
 
     $sitemapUseTo =~ s/"/&quot;/g;
     $sitemapUseTo =~ s/<nop>/#nop#/g;
@@ -257,7 +246,7 @@ sub formatWeb {
   my $sitemapWhat = '';
   if ($result =~ /\$sitemapwhat/) {
     $sitemapWhat = 
-      Foswiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) || '';
+      Foswiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) // '';
 
     $sitemapWhat =~ s/"/&quot;/g;
     $sitemapWhat =~ s/<nop>/#nop#/g;
@@ -265,15 +254,15 @@ sub formatWeb {
     $sitemapWhat =~ s/#nop#/<nop>/g;
   }
 
-  my $summary = $sitemapWhat || '';
+  my $summary = $sitemapWhat // '';
   if ($result =~ /\$summary/) {
-    $summary = Foswiki::Func::getPreferencesValue('WEBSUMMARY', $web->{key}) || '';
+    $summary = Foswiki::Func::getPreferencesValue('WEBSUMMARY', $web->{key}) // '';
     $summary =~ s/<nop>//g;
   }
 
-  my $title = $name || '';
+  my $title = $name // '';
   if ($result =~ /\$title/) {
-    $title = getTopicTitle($web->{key}, $this->{homeTopic});
+    $title = Foswiki::Func::getTopicTitle($web->{key}, $this->{homeTopic});
     $title = $name if $title eq $this->{homeTopic};
   }
 
@@ -281,7 +270,7 @@ sub formatWeb {
   my $color = '';
   if ($result =~ /\$color/) {
     $color =
-      Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) || '';
+      Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) // '';
   }
 
   $result =~ s/\$parent/$web->{parentName}/g;
@@ -337,9 +326,10 @@ sub getWebs {
   my @webs = ();
   if ($filter) {
     $filter = 'user,public,allowed' if $filter eq 'public';
+    $filter = 'user,sitemap,allowed' if $filter eq 'sitemap';
     $filter = 'template,allowed' if $filter eq 'webtemplate';
 
-    my $filter = new Foswiki::WebFilter($filter);
+    my $filter = new Foswiki::Plugins::FlexWebListPlugin::WebFilter($filter);
 
     while ($wit->hasNext()) {
       my $w = '';
@@ -431,43 +421,5 @@ sub escapeParameter {
   $_[0] =~ s/\$n/\n/g;
   $_[0] =~ s/\$dollar/\$/g;
 }
-
-###############################################################################
-sub getTopicTitle {
-  my ($web, $topic) = @_;
-
-  my ($meta, $text) = Foswiki::Func::readTopic($web, $topic);
-
-  if ($Foswiki::cfg{SecureTopicTitles}) {
-    my $wikiName = Foswiki::Func::getWikiName();
-    return $topic
-      unless Foswiki::Func::checkAccessPermission('VIEW', $wikiName, $text, $topic, $web, $meta);
-  }
-
-  # read the formfield value
-  my $title = $meta->get('FIELD', 'TopicTitle');
-  $title = $title->{value} if $title;
-
-  # read the topic preference
-  unless ($title) {
-    $title = $meta->get('PREFERENCE', 'TOPICTITLE');
-    $title = $title->{value} if $title;
-  }
-
-  # read the preference
-  unless ($title)  {
-    Foswiki::Func::pushTopicContext($web, $topic);
-    $title = Foswiki::Func::getPreferencesValue('TOPICTITLE');
-    Foswiki::Func::popTopicContext();
-  }
-
-  # default to topic name
-  $title ||= $topic;
-
-  $title =~ s/\s*$//;
-  $title =~ s/^\s*//;
-
-  return $title;
-} 
 
 1;

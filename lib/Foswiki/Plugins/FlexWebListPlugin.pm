@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2015 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2018 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -17,8 +17,8 @@ package Foswiki::Plugins::FlexWebListPlugin;
 use strict;
 use warnings;
 
-our $VERSION = '2.00';
-our $RELEASE = '25 Sep 2015';
+our $VERSION = '2.10';
+our $RELEASE = '28 May 2018';
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
 our %cores = ();
@@ -36,6 +36,8 @@ sub getCore() {
 
   # Item12972: get the core for this host; note there might be separate cores
   # when using VirtualHostingContrib
+
+  # SMELL: why - cores are destroyed after each call???
   my $core = $cores{$Foswiki::cfg{DefaultUrlHost}};
 
   unless ($core) {
@@ -47,6 +49,9 @@ sub getCore() {
 }
 
 sub finishPlugin {
+  foreach my $core (values %cores) {
+    $core->reset();
+  }
   %cores = ();
 }
 

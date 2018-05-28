@@ -1,0 +1,2 @@
+ONLYIF ( $Foswiki::Plugins::VERSION < 2.6)
+Foswiki::Plugins::TopicTitlePlugin,>1.00,perl,Required for Foswiki < 2.2

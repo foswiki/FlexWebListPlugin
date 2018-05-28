@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1437150802" format="1.1"  version="1"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1527514311" format="1.1"  version="1"}%
 %META:TOPICPARENT{name="FlexWebListPlugin"}%
 ---+!! %TOPIC%
 
@@ -8,57 +8,73 @@ for a better illustration of the examples below.
 
 %TOC%
 
----++ No params
+---++ No params (almost)
 <verbatim>
-%FLEXWEBLIST%
+%FLEXWEBLIST{separator=", "}%
 </verbatim>
-%FLEXWEBLIST%
+<noautolink>
+%FLEXWEBLIST{separator=", "}%
+</noautolink>
 
 ---++ Influencing order
 <verbatim>
-%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%"}%
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%"}%
+<noautolink>
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", "}%
+</noautolink>
 
 ---++ Controlling subwebs
 ---+++ No subwebs
 <verbatim>
-%FLEXWEBLIST{subwebs="none"}%
+%FLEXWEBLIST{subwebs="none" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{subwebs="none"}%
+<noautolink>
+%FLEXWEBLIST{subwebs="none" separator=", "}%
+</noautolink>
 
 ---+++ Only subwebs
 <verbatim>
-%FLEXWEBLIST{subwebs="only"}%
+%FLEXWEBLIST{subwebs="only" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{subwebs="only"}%
+<noautolink>
+%FLEXWEBLIST{subwebs="only" separator=", "}%
+</noautolink>
 
 ---+++ Subwebs of "Sandbox"
 <verbatim>
-%FLEXWEBLIST{subwebs="Sandbox"}%
+%FLEXWEBLIST{subwebs="Sandbox" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{subwebs="Sandbox"}%
+<noautolink>
+%FLEXWEBLIST{subwebs="Sandbox" separator=", "}%
+</noautolink>
 
 ---++ Using include and exclude
 
 ---+++ Exclude <nop>TestCases and Trash webs
 <verbatim>
-%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none"}%
+%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none"}%
+<noautolink>
+%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", "}%
+</noautolink>
 
 ---+++ Include Sandbox web and all of its subwebs
 <verbatim>
-%FLEXWEBLIST{include="Sandbox(/\w+)?"}%
+%FLEXWEBLIST{include="Sandbox(/\w+)?" separator=", "}%
 </verbatim>
-%FLEXWEBLIST{include="Sandbox(/\w+)?"}%
+<noautolink>
+%FLEXWEBLIST{include="Sandbox(/\w+)?" separator=", "}%
+</noautolink>
 
 ---++ Creating lists
 ---+++ Simple nested list
 <verbatim>
 %FLEXWEBLIST{format="$indent   * [[$web.%HOMETOPIC%][$name]]$n"}%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{format="$indent   * [[$web.%HOMETOPIC%][$name]]$n"}%
+</noautolink>
 
 ---+++ Nested list using HTML
 <verbatim>
@@ -69,7 +85,9 @@ for a better illustration of the examples below.
    footer="</li></ul>" 
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{header="<ul>" format="<li>[[$web.%HOMETOPIC%][$name]]" separator="</li>" footer="</li></ul>"}%
+</noautolink>
 
 ---+++ Nested calls to FLEXWEBLIST
 <verbatim>
@@ -84,6 +102,7 @@ for a better illustration of the examples below.
    }$percnt"
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{
    exclude="(TestCases|Trash).*" 
    subwebs="none"
@@ -94,6 +113,7 @@ for a better illustration of the examples below.
      format=\"$dollarindent   * [[$dollarweb.%HOMETOPIC%][$dollarname]]$dollarn\"
    }$percnt"
 }%
+</noautolink>
 ---+++ Twisty weblist
 needs the Foswiki:Extensions/TwistyPlugin
 <verbatim>
@@ -107,6 +127,7 @@ needs the Foswiki:Extensions/TwistyPlugin
    footer="</li></ul>" 
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{
    header="<ul><li>" 
    format="
@@ -116,17 +137,19 @@ needs the Foswiki:Extensions/TwistyPlugin
    separator="$percntENDTWISTY$percnt</li><li>"
    footer="</li></ul>" 
 }%
-
+</noautolink>
 
 ---++ Sitemap
+<noautolink>
 %FLEXWEBLIST{
-  webs="%USERSWEB%,public,%SYSTEMWEB%"
+  webs="sitemap"
   header="<div class=\"header\">" 
   format="<div class=\"web\">
     [[$web.%HOMETOPIC%][$name]] $percntVAR{\"WEBSUMMARY\" web=\"$web\"}$percnt
   </div>" 
   footer="</div>" 
 }%
+<literal>
 <style type="text/css">
 .web,
 .header {
@@ -143,6 +166,8 @@ needs the Foswiki:Extensions/TwistyPlugin
   font-weight:bold;
 }
 </style>
+</literal>
+</noautolink>
 
 ---++ Mapping names
 <verbatim>
@@ -151,11 +176,12 @@ needs the Foswiki:Extensions/TwistyPlugin
     format="$indent   * [[$web.%HOMETOPIC%][$name]]$n"
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{
     map="TestCases=Tests,%SYSTEMWEB%=Documentation,%USERSWEB%=Users"
     format="$indent   * [[$web.%HOMETOPIC%][$name]]$n"
 }%
-
+</noautolink>
 
 ---++ Marking a selection
 ---+++ Using marker
@@ -167,12 +193,14 @@ needs the Foswiki:Extensions/TwistyPlugin
    selection="%BASEWEB%"
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{
    exclude="(TestCases|Trash).*"
    format="$indent   * <span class=\"$marker\"> $web </span>$n"
    marker="foswikiAlert"
    selection="%BASEWEB%"
 }%
+</noautolink>
 ---+++ Using markerformat
 <verbatim>
 %FLEXWEBLIST{
@@ -183,6 +211,7 @@ needs the Foswiki:Extensions/TwistyPlugin
    selection="%BASEWEB%"
 }%
 </verbatim>
+<noautolink>
 %FLEXWEBLIST{
    exclude="(TestCases|Trash).*"
    format="$indent   * [[$web.%HOMETOPIC%][$name]]$n"
@@ -190,3 +219,4 @@ needs the Foswiki:Extensions/TwistyPlugin
      [[$web.%HOMETOPIC%][<span class=\"foswikiAlert\">$name</span>]]$n"
    selection="%BASEWEB%"
 }%
+</noautolink>

@@ -1,6 +1,6 @@
-%META:TOPICINFO{author="ProjectContributor" date="1437150802" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1527514311" format="1.1" version="1"}%
 ---+!! <nop>%TOPIC%
-%SHORTDESCRIPTION%
+%FORMFIELD{"Description"}%
 
 %TOC%
 
@@ -20,6 +20,7 @@ while using the specified format strings to produce the output.
 Parameters:
    * =webs=: a list of webs to be displayed and/or 
      "public" - a list of all non-hidden webs, 
+     "sitemap" - a list of all non-hidden webs that are supposed to be listed on a sitemap, 
      "webtemplate" - a list of all template webs; 
      "publiccurrent" - a list of all non-hidden webs including the current one;
      (defaults to "public")
@@ -136,7 +137,7 @@ The following picture illustrates when which format strings are used
 ---++ Examples
 See [[FlexWebListExamples]] and [[FlexWebListTree]].
 
----++ Plugin Installation Instructions
+---++ Installation Instructions
 %$INSTALL_INSTRUCTIONS%
 
 ---++ Dependencies
@@ -145,6 +146,7 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  28 May 2018: | extended !WebFilter to properly adhere to SITEMAPLIST and NOSEARCHALL |
 |  17 Jul 2015: | more caching issues fixed |
 |  26 Sep 2014: | fixed caching issue when using Foswiki:Extensions/VirtualHostingContrib (Foswiki:Main/MaikGlatki) |
 |  28 May 2014: | !TopicTitle defaults to web name (not !WebHome) if not set otherwise |
@@ -158,7 +160,7 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 |  17 Nov 2009: | fixed processing subwebs and marker format |
 |  02 Jul 2009: | added =$color=, =$sitemapuseto=, =$sitemapwhat= and =$url=; fixed examples |
 |  17 Apr 2009: | converted to foswiki |
-|  03 Jul 2008: | don't blat if there's a subweb with no parent web, habbens in Trash from time to time |
+|  03 Jul 2008: | don't blat if there's a subweb with no parent web, happens in Trash from time to time |
 |  15 Feb 2008: | explicitly disable unwanted webs |
 |  17 Jan 2008: | added treeview example based on Foswiki:Extensions/JQueryPlugin |
 |  03 Jan 2008: | fixed hiding of subwebs |
@@ -180,16 +182,13 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 |  26 Jul 2006: | first release |
 |  05 Jul 2006: | initial version |
 
-<!-- 
-   * Set SHORTDESCRIPTION = %$SHORTDESCRIPTION%
--->
-
 %META:FORM{name="PackageForm"}%
 %META:FIELD{name="Author" title="Author" value="Michael Daum"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2006-2015, Michael Daum http://michaeldaumconsulting.com"}%
-%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%TOPIC%"}%
-%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
-%META:FIELD{name="Release" title="Release" value="%$RELEASE%"}%
+%META:FIELD{name="Version" title="Version" value="%25$VERSION%25"}%
+%META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
+%META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/FlexWebListPlugin"}%
-%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%TOPIC%"}%
-%META:FIELD{name="Version" title="Version" value="%$VERSION%"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2006-2018, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
+%META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%25TOPIC%25"}%
+%META:FIELD{name="Support" title="Support" value="Foswiki:Support/%25TOPIC%25"}%
