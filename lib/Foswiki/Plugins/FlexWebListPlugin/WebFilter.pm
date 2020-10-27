@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2018 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2020 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -44,12 +44,14 @@ sub ok {
   return 0 if !$session->webExists($web);
 
   my $webObject = Foswiki::Meta->new($session, $web);
-  my $thisWebNoSearchAll = Foswiki::isTrue($webObject->getPreference('NOSEARCHALL'), 0);
-  my $thisWebSiteMapList = Foswiki::isTrue($webObject->getPreference('SITEMAPLIST'), 1);
 
-  return 0
-    if ($this->{public} && $thisWebNoSearchAll) ||
-       ($this->{sitemap} && !$thisWebSiteMapList);
+  # disabled for performance reasons
+  #my $thisWebNoSearchAll = Foswiki::isTrue($webObject->getPreference('NOSEARCHALL'), 0);
+  #my $thisWebSiteMapList = Foswiki::isTrue($webObject->getPreference('SITEMAPLIST'), 1);
+
+  #return 0
+  #  if ($this->{public} && $thisWebNoSearchAll) ||
+  #     ($this->{sitemap} && !$thisWebSiteMapList);
 
   return 0 if $this->{allowed} && !$webObject->haveAccess('VIEW');
 

@@ -116,7 +116,7 @@ The following picture illustrates when which format strings are used
   <div class="format">format</div>
   <div class="footer">footer</div>
 </div>
-<style type="text/css">
+<style>
 .box {
   border:1px solid blue;
   padding:10px;
@@ -146,6 +146,9 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  27 Oct 2020: | improve performance by caching existing webs; \
+                  monkey-patch =Foswiki::Func::getListOfWebs= with a caching one; \
+                  ignore =NOSEARCHALL= and =SITEMAPLIST= for performance reasons |
 |  28 May 2018: | extended !WebFilter to properly adhere to SITEMAPLIST and NOSEARCHALL |
 |  17 Jul 2015: | more caching issues fixed |
 |  26 Sep 2014: | fixed caching issue when using Foswiki:Extensions/VirtualHostingContrib (Foswiki:Main/MaikGlatki) |
@@ -188,7 +191,7 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 %META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/FlexWebListPlugin"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2006-2018, Michael Daum http://michaeldaumconsulting.com"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2006-2020, Michael Daum"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%25TOPIC%25"}%
 %META:FIELD{name="Support" title="Support" value="Foswiki:Support/%25TOPIC%25"}%

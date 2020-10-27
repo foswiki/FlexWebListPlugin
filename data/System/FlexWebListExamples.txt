@@ -150,7 +150,7 @@ needs the Foswiki:Extensions/TwistyPlugin
   footer="</div>" 
 }%
 <literal>
-<style type="text/css">
+<style>
 .web,
 .header {
   margin:5px 50px;

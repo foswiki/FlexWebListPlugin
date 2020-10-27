@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2018 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2020 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ use Foswiki::Plugins ();
 use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
 
 use constant TRACE => 0; # toggle me
-use constant CACHE_WEBS => 1;
 
 ###############################################################################
 # static
@@ -43,13 +42,6 @@ sub new {
     || $Foswiki::cfg{HomeTopicName} || 'WebHome';
 
   return $this;
-}
-
-###############################################################################
-sub reset {
-  my $this = shift;
-
-  undef $this->{webIterator};
 }
 
 ###############################################################################
@@ -87,7 +79,7 @@ sub handler {
     $this->{isAdmin} = '';
   }
 
-  $this->{selection} =~ s/\,/ /go;
+  $this->{selection} =~ s/\,/ /g;
   $this->{selection} = ' '.$this->{selection}.' ';
 
   $this->{include} =~ s/\//\\\//g;
@@ -107,7 +99,7 @@ sub handler {
   # compute list
   my %seen;
   my @list = ();
-  my @websList = map {s/^\s+//go; s/\s+$//go; s/\./\//go; $_} split(/\s*,\s*/, $this->{webs});
+  my @websList = map {my $tmp = $_; $tmp =~ s/^\s+|\s+$//g; $tmp =~ s/\./\//g; $tmp} split(/\s*,\s*/, $this->{webs});
   #writeDebug("websList=".join(',', @websList));
   my $allWebs = $this->getWebs();
 
@@ -297,16 +289,10 @@ sub formatWeb {
 
 ###############################################################################
 sub getWebIterator {
-  my $this = shift;
+  my ($this, $filter) = @_;
 
-  if (defined $this->{webIterator} && CACHE_WEBS) {
-    $this->{webIterator}->reset;
-  } else {
-    my @webs = Foswiki::Func::getListOfWebs();
-    $this->{webIterator} = new Foswiki::ListIterator(\@webs);
-  }
-
-  return $this->{webIterator};
+  my @webs = Foswiki::Plugins::FlexWebListPlugin::getListOfWebs($filter);
+  return new Foswiki::ListIterator(\@webs);
 }
 
 ###############################################################################
@@ -318,10 +304,10 @@ sub getWebs {
   my $session = $Foswiki::Plugins::SESSION;
   $filter ||= '';
 
-  #writeDebug("getWebs($filter)");
+  writeDebug("getWebs($filter)");
 
   # lookup cache
-  my $wit = $this->getWebIterator;
+  my $wit = $this->getWebIterator($filter);
 
   my @webs = ();
   if ($filter) {
@@ -333,7 +319,7 @@ sub getWebs {
 
     while ($wit->hasNext()) {
       my $w = '';
-      $w .= '/' if $w;
+      $w .= '.' if $w;
       $w .= $wit->next();
       push @webs, $w if $filter->ok($session, $w);
     }
@@ -351,7 +337,7 @@ sub getWebs {
 # convert a flat list of webs to a structured parent-child structure;
 # the returned hash contains elements of the form
 # {
-#   key => the full webname (e.g. Main/Foo/Bar)
+#   key => the full webname (e.g. Main.Foo.Bar)
 #   name => the tail of the webname (e.g. Bar)
 #   isSubWeb => 1 if the web is a subweb, 0 if it is a top-level web
 #   parentName => only defined for subwebs
@@ -368,7 +354,7 @@ sub hashWebs {
   # collect all webs
   foreach my $key (@webs) {
     $webs{$key}{key} = $key;
-    if ($key =~ /^(.*)\/(.*?)$/) {
+    if ($key =~ /^(.*)[\/\.](.*?)$/) {
       $webs{$key}{isSubWeb} = 1;
       $webs{$key}{parentName} = $1;
       $webs{$key}{name} = $2;
@@ -377,7 +363,7 @@ sub hashWebs {
       $webs{$key}{isSubWeb} = 0;
       $webs{$key}{parentName} = '';
     }
-    $webs{$key}{depth} = ($key =~ tr/\///);
+    $webs{$key}{depth} = ($key =~ tr/\///) || ($key =~ tr/\.//);
   }
 
   # establish parent-child relation
