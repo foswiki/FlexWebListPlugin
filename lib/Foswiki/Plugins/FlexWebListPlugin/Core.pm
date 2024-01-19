@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2022 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2024 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,6 +18,7 @@ use strict;
 use warnings;
 
 use Fcntl qw(:flock);
+use Encode ();
 use Foswiki::Func ();
 use Foswiki::Plugins ();
 use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
@@ -268,7 +269,6 @@ sub formatWeb {
     $title = $name if $title eq $this->{homeTopic};
   }
 
-
   my $color = '';
   if ($result =~ /\$color/) {
     $color =
@@ -301,7 +301,7 @@ sub getWebIterator {
   my ($this, $filter) = @_;
 
   my @webs = $this->getListOfWebs($filter);
-  return new Foswiki::ListIterator(\@webs);
+  return Foswiki::ListIterator->new(\@webs);
 }
 
 # get a hash of all webs, each web points to its subwebs, each subweb points
@@ -323,7 +323,7 @@ sub getWebs {
     $filter = 'user,sitemap,allowed' if $filter eq 'sitemap';
     $filter = 'template,allowed' if $filter eq 'webtemplate';
 
-    my $filter = new Foswiki::Plugins::FlexWebListPlugin::WebFilter($filter);
+    my $filter = Foswiki::Plugins::FlexWebListPlugin::WebFilter->new($filter);
 
     while ($wit->hasNext()) {
       my $w = '';
@@ -396,7 +396,7 @@ sub getListOfWebs {
   @result = grep {/^($web)[\/\.]/} @result if defined $web;
 
   if (defined $filter) {
-    my $f = new Foswiki::Plugins::FlexWebListPlugin::WebFilter($filter);
+    my $f = Foswiki::Plugins::FlexWebListPlugin::WebFilter->new($filter);
     my $session = $Foswiki::Plugins::SESSION;
     @result = grep {$f->ok($session, $_)} @result;
   }
@@ -416,6 +416,7 @@ sub readWebList {
     if (-e $file) {
       $this->lock(LOCK_SH);
       my $data = Foswiki::Func::readFile($file);
+      $data = Encode::decode_utf8($data);
       $this->unlock();
       @{$this->{webList}} = split("\n", $data) if $data;
     } 
@@ -479,7 +480,9 @@ sub saveWebList {
 
   $this->lock();
   _writeDebug("... ".scalar(@{$this->{webList}})." webs in cache");
-  Foswiki::Func::saveFile($this->{websFileName}, join("\n", sort @{$this->{webList}})."\n");
+  my $data = join("\n", sort @{$this->{webList}})."\n";
+  $data = Encode::encode_utf8($data);
+  Foswiki::Func::saveFile($this->{websFileName}, $data);
 
   $this->{loadTime} = time(); #update to prevent reloading it
 

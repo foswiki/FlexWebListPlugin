@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2022 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2024 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -20,11 +20,12 @@ use warnings;
 use Foswiki::Func ();
 use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
 
-our $VERSION = '4.10';
-our $RELEASE = '29 Apr 2022';
+our $VERSION = '4.20';
+our $RELEASE = '%$RELEASE%';
 
 our $NO_PREFS_IN_TOPIC = 1;
 our $SHORTDESCRIPTION = 'Flexible way to display hierarchical weblists';
+our $LICENSECODE = '%$LICENSECODE%';
 our %cores = ();
 
 use constant MEMORYCACHE => 1;
@@ -32,7 +33,7 @@ use constant TRACE => 0; # toggle me
 
 # monkey-patch Func API
 BEGIN {
-    no warnings 'redefine';
+    no warnings 'redefine'; ## no critic
     *Foswiki::Func::origGetListOfWebs = \&Foswiki::Func::getListOfWebs;
     *Foswiki::Func::getListOfWebs = sub { return getCore()->getListOfWebs(@_);};
     use warnings 'redefine';
@@ -49,6 +50,7 @@ sub initPlugin {
   my $refresh = $request->param("refresh") || '';
   if ($refresh =~ /^(on|webs|all)$/) {
     getCore()->clearCache();
+    getCore()->readWebList();
   }
 
   return 1;
