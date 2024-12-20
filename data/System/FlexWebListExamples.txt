@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" comment="" date="1527514311" format="1.1"  version="1"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1734691247" format="1.1"  version="1"}%
 %META:TOPICPARENT{name="FlexWebListPlugin"}%
 ---+!! %TOPIC%
 
@@ -10,61 +10,61 @@ for a better illustration of the examples below.
 
 ---++ No params (almost)
 <verbatim>
-%FLEXWEBLIST{separator=", "}%
+%FLEXWEBLIST{separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{separator=", "}%
+%FLEXWEBLIST{separator=", " subheader=", "}%
 </noautolink>
 
 ---++ Influencing order
 <verbatim>
-%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", "}%
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", "}%
+%FLEXWEBLIST{webs="%USERSWEB%,public,%SYSTEMWEB%" separator=", " subheader=", "}%
 </noautolink>
 
 ---++ Controlling subwebs
 ---+++ No subwebs
 <verbatim>
-%FLEXWEBLIST{subwebs="none" separator=", "}%
+%FLEXWEBLIST{subwebs="none" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{subwebs="none" separator=", "}%
+%FLEXWEBLIST{subwebs="none" separator=", " subheader=", "}%
 </noautolink>
 
 ---+++ Only subwebs
 <verbatim>
-%FLEXWEBLIST{subwebs="only" separator=", "}%
+%FLEXWEBLIST{subwebs="only" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{subwebs="only" separator=", "}%
+%FLEXWEBLIST{subwebs="only" separator=", " subheader=", "}%
 </noautolink>
 
 ---+++ Subwebs of "Sandbox"
 <verbatim>
-%FLEXWEBLIST{subwebs="Sandbox" separator=", "}%
+%FLEXWEBLIST{subwebs="Sandbox" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{subwebs="Sandbox" separator=", "}%
+%FLEXWEBLIST{subwebs="Sandbox" separator=", " subheader=", "}%
 </noautolink>
 
 ---++ Using include and exclude
 
 ---+++ Exclude <nop>TestCases and Trash webs
 <verbatim>
-%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", "}%
+%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", "}%
+%FLEXWEBLIST{exclude="(TestCases|Trash).*" subwebs="none" separator=", " subheader=", "}%
 </noautolink>
 
 ---+++ Include Sandbox web and all of its subwebs
 <verbatim>
-%FLEXWEBLIST{include="Sandbox(/\w+)?" separator=", "}%
+%FLEXWEBLIST{include="Sandbox(\.\w+)?" separator=", " subheader=", "}%
 </verbatim>
 <noautolink>
-%FLEXWEBLIST{include="Sandbox(/\w+)?" separator=", "}%
+%FLEXWEBLIST{include="Sandbox(\.\w+)?" separator=", " subheader=", "}%
 </noautolink>
 
 ---++ Creating lists

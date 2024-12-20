@@ -18,9 +18,8 @@ use strict;
 use warnings;
 
 use Foswiki::Func ();
-use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
 
-our $VERSION = '4.20';
+our $VERSION = '5.00';
 our $RELEASE = '%$RELEASE%';
 
 our $NO_PREFS_IN_TOPIC = 1;
@@ -33,10 +32,10 @@ use constant TRACE => 0; # toggle me
 
 # monkey-patch Func API
 BEGIN {
-    no warnings 'redefine'; ## no critic
-    *Foswiki::Func::origGetListOfWebs = \&Foswiki::Func::getListOfWebs;
-    *Foswiki::Func::getListOfWebs = sub { return getCore()->getListOfWebs(@_);};
-    use warnings 'redefine';
+   no warnings 'redefine'; ## no critic
+   *Foswiki::Func::origGetListOfWebs = \&Foswiki::Func::getListOfWebs;
+   *Foswiki::Func::getListOfWebs = sub { return getCore()->getListOfWebs(@_);};
+   use warnings 'redefine';
 }
 
 sub initPlugin {
@@ -95,6 +94,5 @@ sub afterRenameHandler {
 sub _writeDebug {
   print STDERR '- FlexWebListPlugin - '.$_[0]."\n" if TRACE;
 }
-
 
 1;

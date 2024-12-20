@@ -21,7 +21,6 @@ use Fcntl qw(:flock);
 use Encode ();
 use Foswiki::Func ();
 use Foswiki::Plugins ();
-use Foswiki::Plugins::FlexWebListPlugin::WebFilter ();
 
 use constant TRACE => 0; # toggle me
 
@@ -32,33 +31,44 @@ sub new {
 
   #_writeDebug("new FlexWebListPlugin::Core");
 
-  $this->{homeTopic} = Foswiki::Func::getPreferencesValue('HOMETOPIC') 
-    || $Foswiki::cfg{HomeTopicName} || 'WebHome';
+  $this->{homeTopic} =
+       Foswiki::Func::getPreferencesValue('HOMETOPIC')
+    || $Foswiki::cfg{HomeTopicName}
+    || 'WebHome';
 
-  $this->{websFileName} = Foswiki::Func::getWorkArea("FlexWebListPlugin")."/webs.txt";
-  $this->{lockFileName} = Foswiki::Func::getWorkArea("FlexWebListPlugin")."/webs.lock";
+  $this->{websFileName} = Foswiki::Func::getWorkArea("FlexWebListPlugin") . "/webs.txt";
+  $this->{lockFileName} = Foswiki::Func::getWorkArea("FlexWebListPlugin") . "/webs.lock";
   $this->{mustSave} = 0;
 
   return $this;
 }
 
-sub DESTROY {
-  my $this = shift;
-
-  _writeDebug("called DESTROY");
-  $this->finish();
-  $this->{webList} = undef;
-}
-
 sub finish {
   my $this = shift;
 
-  _writeDebug("called finish");
   $this->saveWebList();
+
+  undef $this->{session};
+  undef $this->{webList};
+  undef $this->{mustSave};
+  undef $this->{haveAccess};
+}
+
+sub session {
+  my $this = shift;
+
+  my $session = $this->{session};
+  unless ($session) {
+    $session = $this->{session} = $Foswiki::Plugins::SESSION;
+  }
+
+  return $session;
 }
 
 sub handleFLEXWEBLIST {
   my ($this, $session, $params, $currentTopic, $currentWeb) = @_;
+
+  $this->{session} = $session;
 
   #_writeDebug("*** called %FLEXWEBLIST{".$params->stringify."}%");
   # extract parameters
@@ -92,13 +102,12 @@ sub handleFLEXWEBLIST {
 
   $this->{selection} =~ s/,/ /g;
   $this->{selection} =~ s/\//./g;
-  $this->{selection} = ' '.$this->{selection}.' ';
+  $this->{selection} = ' ' . $this->{selection} . ' ';
 
   $this->{include} =~ s/\//\\\//g;
   _writeDebug("include filter=/^($this->{include})\$/") if $this->{include};
   #_writeDebug("exclude filter=/^($this->{exclude})\$/") if $this->{exclude};
 
-  
   # compute map
   my $theMap = $params->{map} // '';
   $this->{map} = ();
@@ -107,11 +116,11 @@ sub handleFLEXWEBLIST {
       $this->{map}{$1} = $2;
     }
   }
-  
+
   # compute list
   my %seen;
   my @list = ();
-  my @websList = map {my $tmp = $_; $tmp =~ s/^\s+|\s+$//g; $tmp =~ s/\./\//g; $tmp} split(/\s*,\s*/, $this->{webs});
+  my @websList = map { my $tmp = $_; $tmp =~ s/^\s+|\s+$//g; $tmp =~ s/\./\//g; $tmp } split(/\s*,\s*/, $this->{webs});
   #_writeDebug("websList=".join(',', @websList));
   my $allWebs = $this->getWebs();
 
@@ -121,13 +130,13 @@ sub handleFLEXWEBLIST {
       $aweb = $1;
       my @webs;
       if (defined $2 && Foswiki::Func::webExists($currentWeb)) {
-	push @webs, $currentWeb
+        push @webs, $currentWeb;
       }
       push @webs, keys %{$this->getWebs($aweb)};
       foreach my $bweb (sort @webs) {
-	next if $seen{$bweb};
-	$seen{$bweb} = 1;
-	push @list, $bweb;
+        next if $seen{$bweb};
+        $seen{$bweb} = 1;
+        push @list, $bweb;
       }
 
     } else {
@@ -151,8 +160,10 @@ sub handleFLEXWEBLIST {
       next if $this->{exclude} ne '' && $web->{key} =~ /^($this->{exclude})$/;
       next if $this->{include} ne '' && $web->{key} !~ /^($this->{include})$/;
     }
-    next if $this->{adminwebs} ne '' && !$this->{isAdmin} &&
-      $web->{key} =~ /^($this->{adminwebs})$/;
+    next
+      if $this->{adminwebs} ne ''
+      && !$this->{isAdmin}
+      && $web->{key} =~ /^($this->{adminwebs})$/;
     $web->{enabled} = 1;
   }
 
@@ -176,8 +187,8 @@ sub handleFLEXWEBLIST {
 
   return '' unless @result;
 
-  my $result = join($this->{separator},@result);
-  $result = $this->{header}.$result.$this->{footer};
+  my $result = join($this->{separator}, @result);
+  $result = $this->{header} . $result . $this->{footer};
   $result =~ s/\$marker//g;
 
   _escapeParameter($result);
@@ -196,8 +207,6 @@ sub formatWeb {
 
   #_writeDebug("formatWeb($web->{key})");
 
-  my $session = $Foswiki::Plugins::SESSION;
-
   # format all subwebs recursively
   my $subWebResult = '';
   my @lines;
@@ -214,7 +223,7 @@ sub formatWeb {
       $header =~ s/\$marker/$this->{marker}/g;
       $footer =~ s/\$marker/$this->{marker}/g;
     }
-    $subWebResult = $this->{subHeader}.join($this->{subSeparator},@lines).$this->{subFooter};
+    $subWebResult = $this->{subHeader} . join($this->{subSeparator}, @lines) . $this->{subFooter};
   }
 
   my $result = '';
@@ -225,20 +234,19 @@ sub formatWeb {
       $format = $this->{markerFormat};
       $format =~ s/\$marker/$this->{marker}/g;
     }
-    $result = $format.$subWebResult;
+    $result = $format . $subWebResult;
   }
   my $nrSubWebs = @{$web->{children}};
   my $name = $this->{map}{$web->{name}} || $web->{name};
 
   my $url = '';
   if ($result =~ /\$url/) {
-    $url = $session->getScriptUrl(0, 'view', $web->{key}, $this->{homeTopic});
+    $url = $this->session->getScriptUrl(0, 'view', $web->{key}, $this->{homeTopic});
   }
 
   my $sitemapUseTo = '';
   if ($result =~ /\$sitemapuseto/) {
-    $sitemapUseTo = 
-      Foswiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) // '';
+    $sitemapUseTo = Foswiki::Func::getPreferencesValue('SITEMAPUSETO', $web->{key}) // '';
 
     $sitemapUseTo =~ s/"/&quot;/g;
     $sitemapUseTo =~ s/<nop>/#nop#/g;
@@ -248,8 +256,7 @@ sub formatWeb {
 
   my $sitemapWhat = '';
   if ($result =~ /\$sitemapwhat/) {
-    $sitemapWhat = 
-      Foswiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) // '';
+    $sitemapWhat = Foswiki::Func::getPreferencesValue('SITEMAPWHAT', $web->{key}) // '';
 
     $sitemapWhat =~ s/"/&quot;/g;
     $sitemapWhat =~ s/<nop>/#nop#/g;
@@ -263,23 +270,16 @@ sub formatWeb {
     $summary =~ s/<nop>//g;
   }
 
-  my $title = $name // '';
-  if ($result =~ /\$title/) {
-    $title = Foswiki::Func::getTopicTitle($web->{key}, $this->{homeTopic});
-    $title = $name if $title eq $this->{homeTopic};
-  }
-
   my $color = '';
   if ($result =~ /\$color/) {
-    $color =
-      Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) // '';
+    $color = Foswiki::Func::getPreferencesValue('WEBBGCOLOR', $web->{key}) // '';
   }
 
   $result =~ s/\$parent/$web->{parentName}/g;
   $result =~ s/\$name/$name/g;
-  $result =~ s/\$title/$title/g;
+  $result =~ s/\$title/$web->{title}/g;
   $result =~ s/\$origname/$web->{name}/g;
-  $result =~ s/\$qname/"$web->{key}"/g;# historical
+  $result =~ s/\$qname/"$web->{key}"/g; # historical
   $result =~ s/\$web/$web->{key}/g;
   $result =~ s/\$depth/$web->{depth}/g;
   $result =~ s/\$indent\((.+?)\)/$1 x $web->{depth}/ge;
@@ -297,11 +297,55 @@ sub formatWeb {
   return $result;
 }
 
-sub getWebIterator {
-  my ($this, $filter) = @_;
+sub getListOfWebs {
+  my ($this, $filter, $web) = @_;
 
-  my @webs = $this->getListOfWebs($filter);
-  return Foswiki::ListIterator->new(\@webs);
+  #_writeDebug("called getListOfWebs(".($filter//'undef').",".($web//'undef').")");
+
+  my @result = map {$_->{name}} sort {$a->{title} cmp $b->{title}} $this->readWebList();
+  @result = grep { /^($web)[\/\.]/ } @result if defined $web;
+
+  if (defined $filter) {
+    $filter = 'user,public,allowed' if $filter eq 'public';
+    $filter = 'user,sitemap,allowed' if $filter eq 'sitemap';
+    $filter = 'template,allowed' if $filter eq 'webtemplate';
+
+    my $config = {};
+    foreach my $key (qw(user template public allowed sitemap)) {
+      $config->{$key} = ($filter =~ /\b$key\b/) ? 1 : 0;
+    }
+
+    @result = grep { $this->filterWeb($config, $_) } @result;
+  }
+
+  return @result;
+}
+
+sub filterWeb {
+  my ($this, $config, $web) = @_;
+
+  return 0 if $config->{template} && $web !~ /(?:^_|\/_)/;
+
+  return 1 if $web eq $this->session->{webName};
+
+  return 0 if $config->{user} && $web =~ /(?:^_|\/_)/;
+
+  return 0 if $config->{allowed} && !$this->haveAccess($web);
+
+  return 1;
+}
+
+sub haveAccess {
+  my ($this, $web) = @_;
+
+  my $haveAccess = $this->{haveAccess}{$web};
+
+  unless (defined $haveAccess) {
+    my $webObject = Foswiki::Meta->new($this->session, $web);
+    $haveAccess = $this->{haveAccess}{$web} = $webObject->haveAccess('VIEW');
+  }
+
+  return $haveAccess;
 }
 
 # get a hash of all webs, each web points to its subwebs, each subweb points
@@ -309,36 +353,20 @@ sub getWebIterator {
 sub getWebs {
   my ($this, $filter) = @_;
 
-  my $session = $Foswiki::Plugins::SESSION;
-  $filter ||= '';
-
-  #_writeDebug("called getWebs($filter)");
-
-  # lookup cache
-  my $wit = $this->getWebIterator($filter);
-
-  my @webs = ();
-  if ($filter) {
-    $filter = 'user,public,allowed' if $filter eq 'public';
-    $filter = 'user,sitemap,allowed' if $filter eq 'sitemap';
-    $filter = 'template,allowed' if $filter eq 'webtemplate';
-
-    my $filter = Foswiki::Plugins::FlexWebListPlugin::WebFilter->new($filter);
-
-    while ($wit->hasNext()) {
-      my $w = '';
-      $w .= '.' if $w;
-      $w .= $wit->next();
-      push @webs, $w if $filter->ok($session, $w);
-    }
-  } else {
-    @webs = $wit->all();
-  }
-
+  my @webs = $this->getListOfWebs($filter);
   my $webs = $this->hashWebs(@webs);
 
   #_writeDebug("result=".join(',',@webs));
   return $webs;
+}
+
+sub getWebTitle {
+  my ($this, $web) = @_;
+
+  $this->readWebList();
+  $web = _normalizeWebName($web);
+  return unless exists $this->{webList}{$web};
+  return $this->{webList}{$web}->{title};
 }
 
 # convert a flat list of webs to a structured parent-child structure;
@@ -370,6 +398,7 @@ sub hashWebs {
       $webs{$key}{isSubWeb} = 0;
       $webs{$key}{parentName} = '';
     }
+    $webs{$key}{title} = $this->{webList}{$key}->{title};
     $webs{$key}{depth} = ($key =~ tr/\///) || ($key =~ tr/\.//);
   }
 
@@ -387,23 +416,6 @@ sub hashWebs {
   return \%webs;
 }
 
-sub getListOfWebs {
-  my ($this, $filter, $web) = @_;
-
-  #_writeDebug("called getListOfWebs(".($filter//'undef').",".($web//'undef').")");
-
-  my @result = $this->readWebList();
-  @result = grep {/^($web)[\/\.]/} @result if defined $web;
-
-  if (defined $filter) {
-    my $f = Foswiki::Plugins::FlexWebListPlugin::WebFilter->new($filter);
-    my $session = $Foswiki::Plugins::SESSION;
-    @result = grep {$f->ok($session, $_)} @result;
-  }
-
-  return @result;
-}
-
 sub readWebList {
   my $this = shift;
 
@@ -418,20 +430,40 @@ sub readWebList {
       my $data = Foswiki::Func::readFile($file);
       $data = Encode::decode_utf8($data);
       $this->unlock();
-      @{$this->{webList}} = split("\n", $data) if $data;
-    } 
+      foreach my $line (split("\n", $data)) {
+        my ($web, $title);
+        if ($line =~ /^(.*)=(.*)$/) {
+          $web = $1;
+          $title = $2;
+        } else {
+          $web = $1;
+          $title = Foswiki::Func::getTopicTitle($web, $this->{homeTopic});
+          $this->{mustSave} = 1;
+        }
+        $this->{webList}{$web} = {
+          name => $web,
+          title => $title
+        };
+      }
+    }
 
     unless ($this->{webList}) {
       _writeDebug("... calling store for webs");
-      @{$this->{webList}} = map {_normalizeWebName($_)} Foswiki::Func::origGetListOfWebs();
+      foreach my $web (Foswiki::Func::origGetListOfWebs()) {
+        $web = _normalizeWebName($web);
+        my $title = Foswiki::Func::getTopicTitle($web, $this->{homeTopic}); 
+        $this->{webList}{$web} = {
+          name => $web,
+          title => $title
+        };
+      }
       $this->{mustSave} = 1;
     }
 
     $this->{loadTime} = time();
-    _writeDebug("... ".scalar(@{$this->{webList}})." webs in cache");
   }
 
-  return @{$this->{webList}};
+  return values %{$this->{webList}};
 }
 
 sub updateWeb {
@@ -448,10 +480,9 @@ sub removeWeb {
   $web = _normalizeWebName($web);
   _writeDebug("called removeWeb($web)");
 
-  my %knownWebs = map {_normalizeWebName($_) => 1} $this->readWebList();
-  if ($knownWebs{$web}) {
-    delete $knownWebs{$web};
-    @{$this->{webList}} = keys %knownWebs;
+  $this->readWebList();
+  if (exists $this->{webList}{$web}) {
+    delete $this->{webList}{$web};
     $this->{mustSave} = 1;
   }
 }
@@ -462,10 +493,12 @@ sub addWeb {
   $web = _normalizeWebName($web);
   _writeDebug("called addWeb($web)");
 
-  my %knownWebs = map {_normalizeWebName($_) => 1} $this->readWebList();
-  unless ($knownWebs{$web}) {
-    $knownWebs{$web} = 1;
-    @{$this->{webList}} = keys %knownWebs;
+  $this->readWebList();
+  unless (exists $this->{webList}{$web}) {
+    $this->{webList}{$web} = {
+      name => $web,
+      title => Foswiki::Func::getTopicTitle($web, $this->{homeTopic})
+    };
     $this->{mustSave} = 1;
   }
 }
@@ -479,8 +512,7 @@ sub saveWebList {
   _writeDebug("saveWebList()");
 
   $this->lock();
-  _writeDebug("... ".scalar(@{$this->{webList}})." webs in cache");
-  my $data = join("\n", sort @{$this->{webList}})."\n";
+  my $data = join("\n", map {$_->{name} . "=". $_->{title}} sort {$a->{name} cmp $b->{name}} values %{$this->{webList}});
   $data = Encode::encode_utf8($data);
   Foswiki::Func::saveFile($this->{websFileName}, $data);
 
@@ -510,7 +542,7 @@ sub lock {
     open($this->{lockFile}, ">", $this->{lockFileName}) or die "can't create lock file $this->{lockFileName}";
   }
 
-  flock($this->{lockFile}, $mode); 
+  flock($this->{lockFile}, $mode);
 }
 
 sub unlock {
@@ -534,7 +566,7 @@ sub _modificationTime {
   return $stat[9] || $stat[10] || 0;
 }
 
-sub _isAdmin { 
+sub _isAdmin {
 
   if ($Foswiki::Plugins::VERSION >= 1.2) {
     return Foswiki::Func::isAnAdmin();
@@ -568,7 +600,7 @@ sub _normalizeWebName {
 }
 
 sub _writeDebug {
-  print STDERR '- FlexWebListPlugin::Core - '.$_[0]."\n" if TRACE;
+  print STDERR '- FlexWebListPlugin::Core - ' . $_[0] . "\n" if TRACE;
 }
 
 1;

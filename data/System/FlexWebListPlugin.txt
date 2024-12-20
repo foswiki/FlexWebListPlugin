@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1527514311" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1734691247" format="1.1" version="1"}%
 ---+!! <nop>%TOPIC%
 %FORMFIELD{"Description"}%
 
@@ -146,6 +146,8 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  20 Dec 2024: | caching web titles as well, that is the title of the <nop>WebHome topic |
+|  24 Aug 2024: | performance improvements |
 |  19 Jan 2024: | fix encoding of web cache |
 |  29 Apr 2022: | fixed removal of deleted webs; fixed processing subwebs |
 |  27 Oct 2020: | improve performance by caching existing webs; \

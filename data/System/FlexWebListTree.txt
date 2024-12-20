@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1437150802" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" comment="" date="1734691247" format="1.1"  version="1"}%
 %META:TOPICPARENT{name="FlexWebListPlugin"}%
 ---+!! %TOPIC%
 
@@ -21,7 +21,7 @@ If you want to hide the web navigation from <nop>WikiGuests then uncomment the f
   adminwebs="Applications.*"
   map="%SYSTEMWEB%=System"
   header="<ul>"
-  format="<li><a href='$url' title='$sitemapuseto'><span style='background:$color;width:1em;height:1em;border:1px solid #eee;float:left;margin-right:0.5em'></span><nop>$name</a>"
+  format="<li><a href='$url' title='$sitemapuseto'><span style='background:$color;width:1em;height:1em;border:1px solid var(--color-border, #eee);float:left;margin:0 0.7em 0 2px'></span><nop>$name</a>"
   separator="</li>"
   footer="</li></ul>"
   subheader="<ul class=\"natSubWebs\">"
