@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2024 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2025 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -18,8 +18,9 @@ use strict;
 use warnings;
 
 use Foswiki::Func ();
+use Foswiki::Plugins::FlexWebListPlugin::Core ();
 
-our $VERSION = '5.00';
+our $VERSION = '6.00';
 our $RELEASE = '%$RELEASE%';
 
 our $NO_PREFS_IN_TOPIC = 1;

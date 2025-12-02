@@ -1,2 +1,3 @@
+Foswiki::Plugins::MultiLingualPlugin,>=4.00,perl,Optional
 ONLYIF ( $Foswiki::Plugins::VERSION < 2.6)
 Foswiki::Plugins::TopicTitlePlugin,>1.00,perl,Required for Foswiki < 2.2

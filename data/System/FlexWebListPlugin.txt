@@ -1,4 +1,4 @@
-%META:TOPICINFO{author="ProjectContributor" date="1734691247" format="1.1" version="1"}%
+%META:TOPICINFO{author="ProjectContributor" date="1764678584" format="1.1" version="1"}%
 ---+!! <nop>%TOPIC%
 %FORMFIELD{"Description"}%
 
@@ -51,6 +51,7 @@ Parameters:
    * =exclude=: regular expression of items excluded from the output
    * =include=: regular expressions of items that must match in order to be
      included in the output
+   * =translate=: on/off; if enabled then web titles will be translated to the user's current language (defaults to off)
    * =ignorecase=: on/off; if switched on =include= and =exclude= checks are done case-insensitive (defaults to off)
    * =adminwebs=: a regular expression of webs that are considered to be only relevant for 
      <nop>WikiAdmins and are hiddend to non-admin users. In general it is recommended to
@@ -146,6 +147,7 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 ---++ Change History
 
 %TABLE{columnwidths="7em" tablewidth="100%"}%
+|  17 Mar 2025: | added i18n to =FLEXWEBLIST= |
 |  20 Dec 2024: | caching web titles as well, that is the title of the <nop>WebHome topic |
 |  24 Aug 2024: | performance improvements |
 |  19 Jan 2024: | fix encoding of web cache |
@@ -195,7 +197,7 @@ See [[FlexWebListExamples]] and [[FlexWebListTree]].
 %META:FIELD{name="Release" title="Release" value="%25$RELEASE%25"}%
 %META:FIELD{name="Description" title="Description" value="%25$SHORTDESCRIPTION%25"}%
 %META:FIELD{name="Repository" title="Repository" value="https://github.com/foswiki/FlexWebListPlugin"}%
-%META:FIELD{name="Copyright" title="Copyright" value="2006-2024, Michael Daum"}%
+%META:FIELD{name="Copyright" title="Copyright" value="2006-2025, Michael Daum"}%
 %META:FIELD{name="License" title="License" value="GPL ([[http://www.gnu.org/copyleft/gpl.html][GNU General Public License]])"}%
 %META:FIELD{name="Home" title="Home" value="Foswiki:Extensions/%25TOPIC%25"}%
 %META:FIELD{name="Support" title="Support" value="Foswiki:Support/%25TOPIC%25"}%

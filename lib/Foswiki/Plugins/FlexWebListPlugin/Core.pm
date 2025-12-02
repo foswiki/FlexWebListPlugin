@@ -1,6 +1,6 @@
 # Plugin for Foswiki - The Free and Open Source Wiki, http://foswiki.org/
 #
-# Copyright (C) 2006-2024 Michael Daum http://michaeldaumconsulting.com
+# Copyright (C) 2006-2025 Michael Daum http://michaeldaumconsulting.com
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -55,11 +55,15 @@ sub finish {
 }
 
 sub session {
-  my $this = shift;
+  my ($this, $session) = @_;
 
-  my $session = $this->{session};
-  unless ($session) {
-    $session = $this->{session} = $Foswiki::Plugins::SESSION;
+  if ($session) {
+    $this->{session} = $session;
+  } else {
+    $session = $this->{session};
+    unless ($session) {
+      $session = $this->{session} = $Foswiki::Plugins::SESSION;
+    }
   }
 
   return $session;
@@ -68,7 +72,7 @@ sub session {
 sub handleFLEXWEBLIST {
   my ($this, $session, $params, $currentTopic, $currentWeb) = @_;
 
-  $this->{session} = $session;
+  $this->session($session);
 
   #_writeDebug("*** called %FLEXWEBLIST{".$params->stringify."}%");
   # extract parameters
@@ -93,6 +97,7 @@ sub handleFLEXWEBLIST {
   $this->{subWebs} = $params->{subwebs} // 'all';
   $this->{adminwebs} = $params->{adminwebs} // '';
   $this->{ignorecase} = $params->{ignorecase} // 'off';
+  $this->{doTranslate} = Foswiki::Func::isTrue($params->{translate}, 0);
 
   if ($this->{adminwebs}) {
     $this->{isAdmin} = _isAdmin();
@@ -120,8 +125,10 @@ sub handleFLEXWEBLIST {
   # compute list
   my %seen;
   my @list = ();
-  my @websList = map { my $tmp = $_; $tmp =~ s/^\s+|\s+$//g; $tmp =~ s/\./\//g; $tmp } split(/\s*,\s*/, $this->{webs});
-  #_writeDebug("websList=".join(',', @websList));
+  my @websList = 
+    map { my $tmp = $_; $tmp =~ s/^\s+|\s+$//g; $tmp =~ s/\./\//g; $tmp } 
+    split(/\s*,\s*/, $this->{webs});
+
   my $allWebs = $this->getWebs();
 
   # collect the list in preserving the given order in webs parameter
@@ -145,7 +152,7 @@ sub handleFLEXWEBLIST {
       push @list, $aweb if defined $allWebs->{$aweb}; # only add if it exists
     }
   }
-  #_writeDebug("list=".join(',', @list));
+  _writeDebug("list=".join(',', @list));
 
   # filter webs by setting the 'enabled' flag
   foreach my $aweb (@list) {
@@ -169,7 +176,8 @@ sub handleFLEXWEBLIST {
 
   # format result
   my @result;
-  foreach my $aweb (@list) {
+  foreach my $aweb (sort {$allWebs->{$a}{sort} cmp $allWebs->{$b}{sort}} @list) {
+
     my $web = $allWebs->{$aweb};
 
     # filter explicite subwebs
@@ -210,7 +218,7 @@ sub formatWeb {
   # format all subwebs recursively
   my $subWebResult = '';
   my @lines;
-  foreach my $subWeb (@{$web->{children}}) {
+  foreach my $subWeb (sort {$a->{sort} cmp $b->{sort}} @{$web->{children}}) {
     # filter explicite subwebs
     next if $this->{subWebs} !~ /^(all|none|only)$/ && $subWeb->{key} !~ /($this->{subWebs})[\/\.][^\/]*$/;
     my $line = $this->formatWeb($subWeb, $this->{subFormat}); # recurse
@@ -277,7 +285,7 @@ sub formatWeb {
 
   $result =~ s/\$parent/$web->{parentName}/g;
   $result =~ s/\$name/$name/g;
-  $result =~ s/\$title/$web->{title}/g;
+  $result =~ s/\$title/$web->{i18n}/g;
   $result =~ s/\$origname/$web->{name}/g;
   $result =~ s/\$qname/"$web->{key}"/g; # historical
   $result =~ s/\$web/$web->{key}/g;
@@ -302,7 +310,7 @@ sub getListOfWebs {
 
   #_writeDebug("called getListOfWebs(".($filter//'undef').",".($web//'undef').")");
 
-  my @result = map {$_->{name}} sort {$a->{title} cmp $b->{title}} $this->readWebList();
+  my @result = map {$_->{name}} $this->readWebList();
   @result = grep { /^($web)[\/\.]/ } @result if defined $web;
 
   if (defined $filter) {
@@ -315,7 +323,7 @@ sub getListOfWebs {
       $config->{$key} = ($filter =~ /\b$key\b/) ? 1 : 0;
     }
 
-    @result = grep { $this->filterWeb($config, $_) } @result;
+    @result = grep { $this->filterWeb($config, $this->{webList}{$_}) } @result;
   }
 
   return @result;
@@ -324,13 +332,16 @@ sub getListOfWebs {
 sub filterWeb {
   my ($this, $config, $web) = @_;
 
-  return 0 if $config->{template} && $web !~ /(?:^_|\/_)/;
+  _writeDebug("called filterWeb($web->{key})");
+  return 0 if $config->{template} && $web->{key} !~ /(?:^_|\/_)/;
 
-  return 1 if $web eq $this->session->{webName};
+  return 1 if $web->{key} eq $this->session->{webName};
 
-  return 0 if $config->{user} && $web =~ /(?:^_|\/_)/;
+  return 0 if $config->{user} && $web->{key} =~ /(?:^_|\/_)/;
 
-  return 0 if $config->{allowed} && !$this->haveAccess($web);
+  return 0 if $config->{allowed} && !$this->haveAccess($web->{key});
+
+  return 0 if $config->{sitemap} && $this->{webList}{$web->{key}}{noSearchAll} eq 'on';
 
   return 1;
 }
@@ -399,6 +410,7 @@ sub hashWebs {
       $webs{$key}{parentName} = '';
     }
     $webs{$key}{title} = $this->{webList}{$key}->{title};
+    $webs{$key}{i18n} = $this->{webList}{$key}->{i18n};
     $webs{$key}{depth} = ($key =~ tr/\///) || ($key =~ tr/\.//);
   }
 
@@ -413,12 +425,62 @@ sub hashWebs {
   }
   #_writeDebug("keys=".join(',',sort keys %webs));
 
+  # establish sort
+  foreach my $key (@webs) {
+    my $web = $webs{$key};
+    $web->{sort} //= $this->getSort($web);
+  }
+
   return \%webs;
+}
+
+sub getSort {
+  my ($this, $web, $seen) = @_;
+
+  return $web->{sort} if defined $web->{sort};
+
+  $seen //= {};
+  return "" if $seen->{$web->{name}};
+  $seen->{$web->{name}} = 1;
+
+  if ($web->{parentName}) {
+    my $parentWeb = $this->{webList}{$web->{parentName}};
+    $web->{sort} = $this->getSort($parentWeb, $seen) . " " . $web->{i18n};
+  } else {
+    $web->{sort} = $web->{i18n};
+  }
+
+  return $web->{sort};
+}
+
+sub translate {
+  my ($this, $string) = @_;
+
+  if ($Foswiki::cfg{Plugins}{MultiLingualPlugin}{Enabled}) {
+    require Foswiki::Plugins::MultiLingualPlugin;
+    return Foswiki::Plugins::MultiLingualPlugin::translate($string);
+  }
+
+  return $this->session->i18n->maketext($string);
+}
+
+sub getTopicTitle {
+  my ($this, $web, $topic) = @_;
+
+  return Foswiki::Func::getTopicTitle($web, $topic) if $Foswiki::cfg{Plugins}{TopicTitlePlugin}{Enabled};
+
+  return $topic if $topic ne $this->{homeTopic};
+
+  my $webTitle = $web;
+  $webTitle =~ s/^.*[\/\.]//;
+
+  return $webTitle;
 }
 
 sub readWebList {
   my $this = shift;
 
+  _writeDebug("called readWebList");
   my $file = $this->{websFileName};
   my $modified = _modificationTime($file);
 
@@ -431,18 +493,28 @@ sub readWebList {
       $data = Encode::decode_utf8($data);
       $this->unlock();
       foreach my $line (split("\n", $data)) {
-        my ($web, $title);
-        if ($line =~ /^(.*)=(.*)$/) {
+        my ($web, $title, $noSearchAll);
+        if ($line =~ /^(.*)=(.*)=(.*)$/) {
           $web = $1;
           $title = $2;
-        } else {
+          $noSearchAll = $3;
+        } elsif ($line =~ /^(.*)=(.*)$/) {
           $web = $1;
-          $title = Foswiki::Func::getTopicTitle($web, $this->{homeTopic});
+          $title = $2;
+          $noSearchAll = Foswiki::Func::getPreferencesFlag('NOSEARCHALL', $web) ? "on" : "off";
+          $this->{mustSave} = 1;
+        } else {
+          $web = $line;
+          $title = $this->getTopicTitle($web, $this->{homeTopic});
+          $noSearchAll = Foswiki::Func::getPreferencesFlag('NOSEARCHALL', $web) ? "on" : "off";
           $this->{mustSave} = 1;
         }
         $this->{webList}{$web} = {
           name => $web,
-          title => $title
+          key => $web,
+          title => $title,
+          i18n => $this->{doTranslate} ? $this->translate($title) : $title,
+          noSearchAll => $noSearchAll
         };
       }
     }
@@ -451,10 +523,14 @@ sub readWebList {
       _writeDebug("... calling store for webs");
       foreach my $web (Foswiki::Func::origGetListOfWebs()) {
         $web = _normalizeWebName($web);
-        my $title = Foswiki::Func::getTopicTitle($web, $this->{homeTopic}); 
+        my $title = $this->getTopicTitle($web, $this->{homeTopic});
+        my $noSearchAll = Foswiki::Func::getPreferencesFlag('NOSEARCHALL', $web) ? "on" : "off";
         $this->{webList}{$web} = {
           name => $web,
-          title => $title
+          key => $web,
+          title => $title,
+          i18n => $this->{doTranslate} ? $this->translate($title) : $title,
+          noSearchAll => $noSearchAll,
         };
       }
       $this->{mustSave} = 1;
@@ -495,9 +571,13 @@ sub addWeb {
 
   $this->readWebList();
   unless (exists $this->{webList}{$web}) {
+    my $title = $this->getTopicTitle($web, $this->{homeTopic});
     $this->{webList}{$web} = {
       name => $web,
-      title => Foswiki::Func::getTopicTitle($web, $this->{homeTopic})
+      key => $web,
+      title => $title,
+      i18n => $this->{doTranslate} ? $this->translate($title) : $title,
+      noSearchAll => Foswiki::Func::getPreferencesFlag('NOSEARCHALL', $web) ? "on" : "off",
     };
     $this->{mustSave} = 1;
   }
@@ -512,7 +592,16 @@ sub saveWebList {
   _writeDebug("saveWebList()");
 
   $this->lock();
-  my $data = join("\n", map {$_->{name} . "=". $_->{title}} sort {$a->{name} cmp $b->{name}} values %{$this->{webList}});
+  my $data = join("\n", 
+    map {
+      $_->{name} . "=". $_->{title} . "=" . $_->{noSearchAll}
+    } 
+    sort {
+      $a->{name} cmp $b->{name}
+    } 
+    grep {$_->{name}}
+    values %{$this->{webList}});
+
   $data = Encode::encode_utf8($data);
   Foswiki::Func::saveFile($this->{websFileName}, $data);
 
