@@ -546,6 +546,7 @@ sub updateWeb {
   my ($this, $web) = @_;
 
   _writeDebug("called udateWeb($web)");
+  return unless Foswiki::Func::topicExists($web, $this->{homeTopic});
   return $this->addWeb($web) if Foswiki::Func::webExists($web);
   return $this->removeWeb($web);
 }
